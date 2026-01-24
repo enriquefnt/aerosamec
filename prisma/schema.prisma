@@ -33,6 +33,8 @@ model Usuario {
   controlesSignos     ControlSignosVitales[]
 
   @@map("usuarios")
+  @@index([email])
+  @@index([dni])
 }
 
 model Hospital {
@@ -52,6 +54,7 @@ model Hospital {
   trasladosDestino Traslado[] @relation("HospitalDestino")
 
   @@map("hospitales")
+  @@index([nombre])
 }
 
 model Traslado {
@@ -121,6 +124,9 @@ model Traslado {
   updatedAt         DateTime @updatedAt
 
   @@map("traslados")
+  @@index([numeroTraslado])
+  @@index([pacienteDni])
+  @@index([estado])
 }
 
 model Procedimiento {
@@ -138,6 +144,7 @@ model Procedimiento {
   createdAt   DateTime @default(now())
 
   @@map("procedimientos")
+  @@index([trasladoId])
 }
 
 model Medicacion {
@@ -156,6 +163,7 @@ model Medicacion {
   createdAt   DateTime @default(now())
 
   @@map("medicaciones")
+  @@index([trasladoId])
 }
 
 model Seguimiento {
@@ -173,6 +181,8 @@ model Seguimiento {
   createdAt   DateTime @default(now())
 
   @@map("seguimientos")
+  @@index([trasladoId])
+  @@index([tipo])
 }
 
 // Nuevo modelo para controles de signos vitales
@@ -199,4 +209,5 @@ model ControlSignosVitales {
   createdAt       DateTime @default(now())
 
   @@map("controles_signos_vitales")
+  @@index([trasladoId])
 }
