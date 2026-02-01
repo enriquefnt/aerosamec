@@ -15,11 +15,32 @@ import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { obtenerHoraActualDispositivo, formatearFechaHoraLocal } from '@/lib/timezone';
 
+interface Traslado {
+  id: string;
+  numeroTraslado: string;
+  estado: string;
+  codigoTraslado: string;
+  pacienteNombre: string;
+  pacienteApellido: string;
+  pacienteDni: string;
+  pacienteSexo: string;
+  pacienteDomicilio: string;
+  pacienteLocalidad: string;
+  pacienteEdadAnios?: number;
+  pacienteEdadMeses?: number;
+  pacienteEdadDias?: number;
+  diagnosticos: string;
+  procedimientos: Array<{ id: string; fechaHora: string; tipo: string; descripcion: string; observaciones?: string }>;
+  medicaciones: Array<{ id: string; fechaHora: string; medicamento: string; dosis: string; via: string; observaciones?: string }>;
+  controlesSignos: Array<{ id: string; fechaHora: string; frecuenciaCardiaca?: string; frecuenciaRespiratoria?: string; presionArterialSist?: string; presionArterialDiast?: string; temperatura?: string; saturacionO2?: string; escalaGlasgow?: string; observaciones?: string }>;
+  epicrisis?: string;
+}
+
 export default function SeguimientoMedicoPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [traslados, setTraslados] = useState<any[]>([]);
-  const [trasladoSeleccionado, setTrasladoSeleccionado] = useState<any>(null);
+  const [traslados, setTraslados] = useState<Traslado[]>([]);
+  const [trasladoSeleccionado, setTrasladoSeleccionado] = useState<Traslado | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');

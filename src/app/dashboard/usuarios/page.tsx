@@ -40,7 +40,11 @@ export default function GestionUsuariosPage() {
   const [success, setSuccess] = useState('');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [creatingUser, setCreatingUser] = useState(false);
-  const [emailInfo, setEmailInfo] = useState<any>(null);
+  interface EmailInfo {
+    verificationUrl: string;
+    // Add other properties if needed
+  }
+  const [emailInfo, setEmailInfo] = useState<EmailInfo | null>(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [editingUser, setEditingUser] = useState<Usuario | null>(null);
   const [updatingUser, setUpdatingUser] = useState(false);

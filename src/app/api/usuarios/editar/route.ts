@@ -93,7 +93,7 @@ export async function PUT(request: NextRequest) {
     );
   }
 }
-function capitalizarNombre(apellidoRaw: any): string {
+function capitalizarNombre(apellidoRaw: string | number | null | undefined): string {
   const raw = String(apellidoRaw ?? '').trim();
   if (!raw) return '';
 
@@ -116,7 +116,7 @@ function capitalizarNombre(apellidoRaw: any): string {
     )
     .join(' ');
 }
-function formatearDNI(dniRaw: any): string {
+function formatearDNI(dniRaw: string | number | null | undefined): string {
   const raw = String(dniRaw ?? '').trim();
   if (!raw) return '';
 
@@ -130,7 +130,7 @@ function formatearDNI(dniRaw: any): string {
   // Formatear con puntos como separadores de miles: 12345678 -> 12.345.678
   return digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }
-function formatearTelefono(telefonoRaw: any): string {
+function formatearTelefono(telefonoRaw: string | number | null | undefined): string {
   const raw = String(telefonoRaw ?? '').trim();
   if (!raw) return '';
 

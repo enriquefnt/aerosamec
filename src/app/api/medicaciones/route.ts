@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-function formatearMedicamento(medicamentoRaw: any): string | null {
+function formatearMedicamento(medicamentoRaw: unknown): string | null {
   if (medicamentoRaw == null) return null;
 
   let raw: string;
@@ -93,7 +93,7 @@ function formatearMedicamento(medicamentoRaw: any): string | null {
     raw = medicamentoRaw;
   } else if (typeof medicamentoRaw === 'object') {
     // aceptar varias posibles claves que el cliente pueda enviar
-    raw = medicamentoRaw.nombre || medicamentoRaw.name || medicamentoRaw.medicamento || '';
+    raw = (medicamentoRaw as Record<string, any>).nombre || (medicamentoRaw as Record<string, any>).name || (medicamentoRaw as Record<string, any>).medicamento || '';
   } else {
     raw = String(medicamentoRaw);
   }
@@ -119,7 +119,7 @@ function formatearMedicamento(medicamentoRaw: any): string | null {
 
   return formatted;
 }
-function limpiarTexto(dosisRaw: any): string | null {
+function limpiarTexto(dosisRaw: unknown): string | null {
   if (dosisRaw == null) return null;
 
   let texto: string;
@@ -132,13 +132,14 @@ function limpiarTexto(dosisRaw: any): string | null {
     texto = dosisRaw.join(' ');
   } else if (typeof dosisRaw === 'object') {
     // aceptar varias claves comunes o concatenar valores útiles
+    const obj = dosisRaw as Record<string, unknown>;
     texto =
-      (dosisRaw.text as string) ||
-      (dosisRaw.valor as string) ||
-      (dosisRaw.value as string) ||
-      (dosisRaw.descripcion as string) ||
-      (dosisRaw.desc as string) ||
-      Object.values(dosisRaw).map(String).join(' ');
+      (obj.text as string) ||
+      (obj.valor as string) ||
+      (obj.value as string) ||
+      (obj.descripcion as string) ||
+      (obj.desc as string) ||
+      Object.values(obj).map(String).join(' ');
   } else {
     texto = String(dosisRaw);
   }

@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -187,7 +187,7 @@ export default function GestionTrasladosPage() {
       } else {
         setError(data.error || 'Error cargando traslados');
       }
-    } catch (error) {
+    } catch {
       setError('Error de conexión');
     } finally {
       setLoading(false);
@@ -202,8 +202,8 @@ export default function GestionTrasladosPage() {
       if (response.ok) {
         setHospitales(data.hospitales || []);
       }
-    } catch (error) {
-      console.error('Error cargando hospitales:', error);
+    } catch {
+      console.error('Error cargando hospitales');
     }
   };
 
@@ -258,7 +258,7 @@ export default function GestionTrasladosPage() {
       } else {
         setError(data.error || 'Error creando traslado');
       }
-    } catch (error) {
+    } catch {
       setError('Error de conexión');
     } finally {
       setCreatingTraslado(false);
@@ -331,7 +331,7 @@ export default function GestionTrasladosPage() {
       } else {
         setError(data.error || 'Error actualizando traslado');
       }
-    } catch (error) {
+    } catch {
       setError('Error de conexión');
     } finally {
       setUpdatingTraslado(false);
@@ -372,7 +372,7 @@ export default function GestionTrasladosPage() {
       } else {
         setError(data.error || 'Error actualizando estado');
       }
-    } catch (error) {
+    } catch {
       setError('Error de conexión');
     } finally {
       setUpdatingEstado(false);
@@ -419,7 +419,7 @@ export default function GestionTrasladosPage() {
       } else {
         setError(data.error || 'Error asignando equipo');
       }
-    } catch (error) {
+    } catch {
       setError('Error de conexión');
     } finally {
       setUpdatingEquipo(false);
@@ -458,7 +458,7 @@ export default function GestionTrasladosPage() {
       } else {
         setError(data.error || 'Error eliminando traslado');
       }
-    } catch (error) {
+    } catch {
       setError('Error de conexión');
     } finally {
       setDeletingTraslado(false);
