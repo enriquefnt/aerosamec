@@ -15,6 +15,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { formatearFechaHoraLocal } from '@/lib/timezone';
 
+interface Hospital {
+  id: string;
+  nombre: string;
+  ciudad: string;
+}
+
 interface Traslado {
   id: string;
   numeroTraslado: string;
@@ -65,13 +71,12 @@ interface Traslado {
 export default function GestionTrasladosPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [traslados, setTraslados] = useState<Traslado[]>([]);
+  const [hospitales, setHospitales] = useState<Hospital[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [creatingTraslado, setCreatingTraslado] = useState(false);
-  const [hospitales, setHospitales] = useState<any[]>([]);
   
   // Estados para edición
   const [showEditDialog, setShowEditDialog] = useState(false);

@@ -153,7 +153,7 @@ export default function SeguimientoMedicoPage() {
       } else {
         setError(data.error || 'Error cargando traslados');
       }
-    } catch (_) {
+    } catch {
       setError('Error de conexión');
     } finally {
       setLoading(false);
@@ -194,7 +194,7 @@ export default function SeguimientoMedicoPage() {
       } else {
         setError(data.error || 'Error guardando epicrisis');
       }
-    } catch (_) {
+    } catch {
       setError('Error de conexión');
     } finally {
       setSavingEpicrisis(false);

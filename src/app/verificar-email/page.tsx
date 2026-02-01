@@ -55,7 +55,7 @@ export default function VerificarEmailPage() {
       } else {
         setError(data.error || 'Token inválido o expirado');
       }
-    } catch (_) {
+    } catch {
       setError('Error de conexión');
     } finally {
       setLoading(false);
@@ -100,7 +100,7 @@ export default function VerificarEmailPage() {
       } else {
         setError(data.error || 'Error cambiando contraseña');
       }
-    } catch (error) {
+    } catch {
       setError('Error de conexión');
     } finally {
       setLoading(false);
