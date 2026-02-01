@@ -93,7 +93,10 @@ function formatearMedicamento(medicamentoRaw: unknown): string | null {
     raw = medicamentoRaw;
   } else if (typeof medicamentoRaw === 'object') {
     // aceptar varias posibles claves que el cliente pueda enviar
-    raw = (medicamentoRaw as Record<string, any>).nombre || (medicamentoRaw as Record<string, any>).name || (medicamentoRaw as Record<string, any>).medicamento || '';
+    raw = (medicamentoRaw as Record<string, unknown>).nombre as string ||
+          (medicamentoRaw as Record<string, unknown>).name as string ||
+          (medicamentoRaw as Record<string, unknown>).medicamento as string ||
+          '';
   } else {
     raw = String(medicamentoRaw);
   }

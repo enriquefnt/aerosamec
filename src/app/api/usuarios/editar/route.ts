@@ -46,7 +46,15 @@ export async function PUT(request: NextRequest) {
       }
     }
 
-    const updateData: any = {};
+    const updateData: {
+      nombre?: string;
+      apellido?: string;
+      dni?: string;
+      telefono?: string | null;
+      rol?: string;
+      funcion?: string;
+      activo?: boolean;
+    } = {};
     
     // Admin puede actualizar todos los campos (excepto email y password)
     if (nombre) updateData.nombre = nombre;

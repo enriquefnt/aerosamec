@@ -141,7 +141,7 @@ export default function SeguimientoMedicoPage() {
         
         // Si hay un traslado seleccionado, actualizarlo con los nuevos datos
         if (trasladoSeleccionado) {
-          const trasladoActualizado = data.traslados.find((t: any) => t.id === trasladoSeleccionado.id);
+          const trasladoActualizado = data.traslados.find((t: Traslado) => t.id === trasladoSeleccionado.id);
           if (trasladoActualizado) {
             setTrasladoSeleccionado(trasladoActualizado);
             setEpicrisis(trasladoActualizado.epicrisis || '');
@@ -153,14 +153,14 @@ export default function SeguimientoMedicoPage() {
       } else {
         setError(data.error || 'Error cargando traslados');
       }
-    } catch (error) {
+    } catch (_) {
       setError('Error de conexión');
     } finally {
       setLoading(false);
     }
   };
 
-  const seleccionarTraslado = (traslado: any) => {
+  const seleccionarTraslado = (traslado: Traslado) => {
     setTrasladoSeleccionado(traslado);
     setNuevoEstado(traslado.estado);
     setEpicrisis(traslado.epicrisis || '');
@@ -194,7 +194,7 @@ export default function SeguimientoMedicoPage() {
       } else {
         setError(data.error || 'Error guardando epicrisis');
       }
-    } catch (error) {
+    } catch (_) {
       setError('Error de conexión');
     } finally {
       setSavingEpicrisis(false);
@@ -236,7 +236,7 @@ export default function SeguimientoMedicoPage() {
       } else {
         setError(data.error || 'Error registrando procedimiento');
       }
-    } catch (error) {
+    } catch {
       setError('Error de conexión');
     } finally {
       setSavingProcedimiento(false);
@@ -278,7 +278,7 @@ export default function SeguimientoMedicoPage() {
       } else {
         setError(data.error || 'Error registrando medicación');
       }
-    } catch (error) {
+    } catch {
       setError('Error de conexión');
     } finally {
       setSavingMedicacion(false);
@@ -320,7 +320,7 @@ export default function SeguimientoMedicoPage() {
       } else {
         setError(data.error || 'Error registrando signos vitales');
       }
-    } catch (error) {
+    } catch {
       setError('Error de conexión');
     } finally {
       setSavingSignos(false);
@@ -355,7 +355,7 @@ export default function SeguimientoMedicoPage() {
       } else {
         setError(data.error || 'Error actualizando estado');
       }
-    } catch (error) {
+    } catch {
       setError('Error de conexión');
     } finally {
       setUpdatingEstado(false);
@@ -608,17 +608,17 @@ export default function SeguimientoMedicoPage() {
                           {(() => {
                             // Combinar todos los registros
                             const registros = [
-                              ...trasladoSeleccionado.procedimientos.map((p: any) => ({
+                              ...trasladoSeleccionado.procedimientos.map((p) => ({
                                 ...p,
                                 tipoRegistro: 'procedimiento',
                                 timestamp: new Date(p.fechaHora).getTime()
                               })),
-                              ...trasladoSeleccionado.medicaciones.map((m: any) => ({
+                              ...trasladoSeleccionado.medicaciones.map((m) => ({
                                 ...m,
                                 tipoRegistro: 'medicacion',
                                 timestamp: new Date(m.fechaHora).getTime()
                               })),
-                              ...trasladoSeleccionado.controlesSignos.map((c: any) => ({
+                              ...trasladoSeleccionado.controlesSignos.map((c) => ({
                                 ...c,
                                 tipoRegistro: 'signos',
                                 timestamp: new Date(c.fechaHora).getTime()
@@ -653,31 +653,31 @@ export default function SeguimientoMedicoPage() {
                                 <TableCell>
                                   {registro.tipoRegistro === 'procedimiento' && (
                                     <div>
-                                      <div className="font-medium">{registro.tipo}</div>
-                                      <div className="text-sm text-gray-600">{registro.descripcion}</div>
+                                      <div className="font-medium">{('tipo' in registro) ? registro.tipo : ''}</div>
+                                      <div className="text-sm text-gray-600">{('descripcion' in registro) ? registro.descripcion : ''}</div>
                                     </div>
                                   )}
                                   {registro.tipoRegistro === 'medicacion' && (
                                     <div>
-                                      <div className="font-medium">{registro.medicamento}</div>
-                                      <div className="text-sm text-gray-600">{registro.dosis} - {registro.via}</div>
+                                      <div className="font-medium">{('medicamento' in registro) ? registro.medicamento : ''}</div>
+                                      <div className="text-sm text-gray-600">{('dosis' in registro) ? registro.dosis : ''} - {('via' in registro) ? registro.via : ''}</div>
                                     </div>
                                   )}
                                   {registro.tipoRegistro === 'signos' && (
                                     <div className="text-sm text-gray-600">Control de signos vitales</div>
                                   )}
                                 </TableCell>
-                                <TableCell>{registro.frecuenciaCardiaca || '-'}</TableCell>
-                                <TableCell>{registro.frecuenciaRespiratoria || '-'}</TableCell>
+                                <TableCell>{registro.tipoRegistro === 'signos' ? ('frecuenciaCardiaca' in registro ? (registro.frecuenciaCardiaca || '-') : '-') : '-'}</TableCell>
+                                <TableCell>{registro.tipoRegistro === 'signos' ? ('frecuenciaRespiratoria' in registro ? (registro.frecuenciaRespiratoria || '-') : '-') : '-'}</TableCell>
                                 <TableCell>
-                                  {registro.presionArterialSist && registro.presionArterialDiast 
+                                  {registro.tipoRegistro === 'signos' && 'presionArterialSist' in registro && 'presionArterialDiast' in registro && registro.presionArterialSist && registro.presionArterialDiast 
                                     ? `${registro.presionArterialSist}/${registro.presionArterialDiast}`
                                     : '-'
                                   }
                                 </TableCell>
-                                <TableCell>{registro.temperatura || '-'}</TableCell>
-                                <TableCell>{registro.saturacionO2 ? `${registro.saturacionO2}%` : '-'}</TableCell>
-                                <TableCell>{registro.escalaGlasgow ? `${registro.escalaGlasgow}/15` : '-'}</TableCell>
+                                <TableCell>{registro.tipoRegistro === 'signos' && 'temperatura' in registro && registro.temperatura ? registro.temperatura : '-'}</TableCell>
+                                <TableCell>{registro.tipoRegistro === 'signos' && 'saturacionO2' in registro && registro.saturacionO2 ? `${registro.saturacionO2}%` : '-'}</TableCell>
+                                <TableCell>{registro.tipoRegistro === 'signos' && 'escalaGlasgow' in registro && registro.escalaGlasgow ? `${registro.escalaGlasgow}/15` : '-'}</TableCell>
                                 <TableCell className="text-sm text-gray-600">
                                   {registro.observaciones || '-'}
                                 </TableCell>
