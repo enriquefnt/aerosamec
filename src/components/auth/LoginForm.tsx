@@ -68,7 +68,7 @@ export default function LoginForm() {
           router.push('/dashboard');
         }
       }
-    } catch (error) {
+    } catch {
       setError('Error de conexión. Intente nuevamente.');
     } finally {
       setIsLoading(false);

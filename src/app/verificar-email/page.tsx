@@ -17,7 +17,14 @@ export default function VerificarEmailPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [tokenValid, setTokenValid] = useState(false);
-  const [userInfo, setUserInfo] = useState<any>(null);
+  type UserInfo = {
+    nombre: string;
+    apellido: string;
+    email: string;
+    rol: string;
+    funcion: string;
+  };
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
 
   useEffect(() => {
     // Obtener token de la URL usando window.location
@@ -48,7 +55,7 @@ export default function VerificarEmailPage() {
       } else {
         setError(data.error || 'Token inválido o expirado');
       }
-    } catch (error) {
+    } catch (_) {
       setError('Error de conexión');
     } finally {
       setLoading(false);

@@ -96,7 +96,7 @@ export default function GestionUsuariosPage() {
       } else {
         setError(data.error || 'Error cargando usuarios');
       }
-    } catch (error) {
+    } catch {
       setError('Error de conexión');
     } finally {
       setLoading(false);
@@ -137,7 +137,7 @@ export default function GestionUsuariosPage() {
       } else {
         setError(data.error || 'Error creando usuario');
       }
-    } catch (error) {
+    } catch {
       setError('Error de conexión');
     } finally {
       setCreatingUser(false);
@@ -164,7 +164,7 @@ export default function GestionUsuariosPage() {
         const data = await response.json();
         setError(data.error || 'Error actualizando usuario');
       }
-    } catch (error) {
+    } catch {
       setError('Error de conexión');
     }
   };
@@ -213,7 +213,7 @@ export default function GestionUsuariosPage() {
       } else {
         setError(data.error || 'Error actualizando usuario');
       }
-    } catch (error) {
+    } catch {
       setError('Error de conexión');
     } finally {
       setUpdatingUser(false);
@@ -253,7 +253,7 @@ export default function GestionUsuariosPage() {
       } else {
         setError(data.error || 'Error eliminando usuario');
       }
-    } catch (error) {
+    } catch {
       setError('Error de conexión');
     } finally {
       setDeletingUser(false);
