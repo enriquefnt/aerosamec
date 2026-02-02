@@ -64,8 +64,8 @@ const handler = NextAuth({
       user?: { rol?: string; telefono?: string } | undefined;
     }) {
       if (user) {
-        token.rol = user.rol;
-        token.telefono = user.telefono;
+      token.rol = user.rol || 'USER';  // Valor por defecto si es undefined
+      token.telefono = user.telefono || '';  // Valor por defecto si es undefined
       }
       return token;
     },

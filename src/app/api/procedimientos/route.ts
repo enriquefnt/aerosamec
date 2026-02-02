@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '../../../../lib/db'; // Ajusta la ruta si es diferente
 
-// Función utilitaria para limpiar texto (trim y uppercase)
-function limpiarTexto(texto: string): string {
+// Función utilitaria para limpiar texto (trim y uppercase), con manejo de undefined
+function limpiarTexto(texto: string | undefined | null): string {
+  if (typeof texto !== 'string' || texto === null || texto === undefined) {
+    return ''; // Devuelve cadena vacía si no es un string válido
+  }
   return texto.trim().toUpperCase();
 }
 
@@ -18,6 +21,7 @@ export async function POST(request: NextRequest) {
       usuarioId  // ID del usuario actual
     } = body;
 
+    // Validaciones iniciales
     if (!trasladoId || typeof trasladoId !== 'string') {
       return NextResponse.json(
         { error: 'ID del traslado es requerido y debe ser un string' },
@@ -28,6 +32,21 @@ export async function POST(request: NextRequest) {
     if (!usuarioId || typeof usuarioId !== 'string') {
       return NextResponse.json(
         { error: 'ID del usuario es requerido' },
+        { status: 400 }
+      );
+    }
+
+    // Validar que tipoRaw y descripcionRaw sean strings (requeridos)
+    if (typeof tipoRaw !== 'string' || tipoRaw.trim() === '') {
+      return NextResponse.json(
+        { error: 'Tipo es requerido y debe ser un string no vacío' },
+        { status: 400 }
+      );
+    }
+
+    if (typeof descripcionRaw !== 'string' || descripcionRaw.trim() === '') {
+      return NextResponse.json(
+        { error: 'Descripción es requerida y debe ser un string no vacío' },
         { status: 400 }
       );
     }
@@ -56,7 +75,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Formatear y limpiar datos automáticamente
+    // Formatear y limpiar datos automáticamente (ahora seguro)
     const tipo = limpiarTexto(tipoRaw);
     const descripcion = limpiarTexto(descripcionRaw);
     const observaciones = observacionesRaw ? limpiarTexto(observacionesRaw) : null;

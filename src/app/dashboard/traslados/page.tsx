@@ -77,6 +77,7 @@ export default function GestionTrasladosPage() {
   const [success, setSuccess] = useState('');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [creatingTraslado, setCreatingTraslado] = useState(false);
+  const [traslados, setTraslados] = useState<Traslado[]>([]);
   
   // Estados para edición
   const [showEditDialog, setShowEditDialog] = useState(false);

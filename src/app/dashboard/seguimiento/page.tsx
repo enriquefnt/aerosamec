@@ -202,47 +202,57 @@ export default function SeguimientoMedicoPage() {
   };
 
   // Función para registrar procedimiento
-  const registrarProcedimiento = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!trasladoSeleccionado) return;
+  // Función para registrar procedimiento
+const registrarProcedimiento = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (!trasladoSeleccionado) return;
 
-    setSavingProcedimiento(true);
-    setError('');
+  // Validación básica en el cliente (opcional, pero recomendado)
+  if (!procedimientoForm.tipo.trim() || !procedimientoForm.descripcion.trim()) {
+    setError('Tipo y descripción son obligatorios.');
+    return;
+  }
 
-    try {
-      const response = await fetch('/api/procedimientos', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          trasladoId: trasladoSeleccionado.id,
-          usuarioId: session?.user?.id,
-          ...procedimientoForm
-        }),
-      });
+  setSavingProcedimiento(true);
+  setError('');
 
-      const data = await response.json();
+  try {
+    const response = await fetch('/api/procedimientos', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        trasladoId: trasladoSeleccionado.id,
+        usuarioId: session?.user?.id,
+        tipoRaw: procedimientoForm.tipo,          // Cambiado a tipoRaw
+        descripcionRaw: procedimientoForm.descripcion,  // Cambiado a descripcionRaw
+        observacionesRaw: procedimientoForm.observaciones || '',  // Cambiado a observacionesRaw, y asegura string
+        fechaHora: procedimientoForm.fechaHora  // Si el servidor lo usa para seguimiento
+      }),
+    });
 
-      if (response.ok) {
-        setSuccess('Procedimiento registrado exitosamente');
-        setShowProcedimientoDialog(false);
-        inicializarFormularios();
-        console.log('✅ Procedimiento registrado, recargando traslados...');
-        // Forzar actualización inmediata
-        setTimeout(async () => {
-          await cargarTraslados();
-        }, 500);
-      } else {
-        setError(data.error || 'Error registrando procedimiento');
-      }
-    } catch {
-      setError('Error de conexión');
-    } finally {
-      setSavingProcedimiento(false);
+    const data = await response.json();
+
+    if (response.ok) {
+      setSuccess('Procedimiento registrado exitosamente');
+      setShowProcedimientoDialog(false);
+      inicializarFormularios();
+      console.log('✅ Procedimiento registrado, recargando traslados...');
+      // Forzar actualización inmediata
+      setTimeout(async () => {
+        await cargarTraslados();
+      }, 500);
+    } else {
+      setError(data.error || 'Error registrando procedimiento');
     }
-  };
-
+  } catch (err) {
+    console.error('Error en fetch:', err);
+    setError('Error de conexión');
+  } finally {
+    setSavingProcedimiento(false);
+  }
+};
   // Función para registrar medicación
   const registrarMedicacion = async (e: React.FormEvent) => {
     e.preventDefault();
