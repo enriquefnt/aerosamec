@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import Image from 'next/image'
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
@@ -65,11 +66,12 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              <img 
+              <Image 
                 src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/93bc40ea-c225-45d3-b910-974774eb57d3.png" 
                 alt="Logo Sistema de Traslados Médicos" 
                 className="h-10 w-10 rounded-lg"
-              />
+                width={500} height={300} />
+             
               <div>
                 <h1 className="text-xl font-bold text-gray-900">
                   Sistema de Traslados Médicos Aéreos
