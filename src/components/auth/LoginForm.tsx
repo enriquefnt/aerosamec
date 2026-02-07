@@ -30,7 +30,7 @@ export default function LoginForm() {
       });
 
       if (result?.error) {
-        setError('Credenciales inválidas. Verifique su email y contraseña.');
+        setError('Credenciales incorrectos. Verifique su email y contraseña.');
       } else {
         // Login exitoso - obtener sesión y redirigir
         const session = await getSession();
@@ -140,7 +140,7 @@ export default function LoginForm() {
             >
               <div className="text-left">
                 <div className="font-medium">Administrador</div>
-                <div className="text-xs text-gray-500">admin@salud.gob.ar</div>
+                <div className="text-xs text-gray-500">admin@aerosamec.gob.ar</div>
               </div>
             </Button>
             <Button
