@@ -2,33 +2,10 @@
 
 import * as React from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { DayPicker, NavProps } from "react-day-picker"
+import { DayPicker } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
-
-function CustomNav({ nextMonth, previousMonth, onNextClick, onPreviousClick }: NavProps) {
-  return (
-    <div className="flex items-center gap-1">
-      <button
-        type="button"
-        onClick={(e) => onPreviousClick?.(e)}
-        disabled={!previousMonth}
-        className="size-7 bg-transparent p-0 opacity-50 hover:opacity-100"
-      >
-        <ChevronLeft className="size-4" />
-      </button>
-      <button
-        type="button"
-        onClick={(e) => onNextClick?.(e)}
-        disabled={!nextMonth}
-        className="size-7 bg-transparent p-0 opacity-50 hover:opacity-100"
-      >
-        <ChevronRight className="size-4" />
-      </button>
-    </div>
-  )
-}
 
 function Calendar({
   className,
@@ -58,9 +35,9 @@ function Calendar({
           "text-muted-foreground rounded-md w-8 font-normal text-[0.8rem]",
         row: "flex w-full mt-2",
         cell: cn(
-          "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent [&:has([aria-selected].day-range-end)]:rounded-r-md",
+          "relative p-0 text-center text-sm focus-within:relative focus-within:z-20 [&:has([aria-selected])]:bg-accent",
           props.mode === "range"
-            ? "[&:has(>.day-range-end)]:rounded-r-md [&:has(>.day-range-start)]:rounded-l-md first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md"
+            ? "[&:has(>.day-range-end)]:rounded-r-md [&:has(>.day-range-start)]:rounded-l-md"
             : "[&:has([aria-selected])]:rounded-md"
         ),
         day: cn(
@@ -83,7 +60,8 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        Nav: CustomNav
+        IconLeft: () => <ChevronLeft className="h-4 w-4" />,
+        IconRight: () => <ChevronRight className="h-4 w-4" />,
       }}
       {...props}
     />
