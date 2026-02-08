@@ -109,7 +109,7 @@ export default function HomePage() {
               <h3 className="font-semibold text-gray-900 mb-4">Estado del Sistema</h3>
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
-                  <div className="text-2xl font-bold text-blue-600">24/7</div>
+                  <div className="text-2xl font-bold text-orange-600">24/7</div>
                   <div className="text-sm text-gray-600">Disponibilidad</div>
                 </div>
                 <div>
