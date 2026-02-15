@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '../../../../../lib/db';
+import { prisma } from '../../../../lib/db';
 
 // GET - Listar traslados para operarios (solo los asignados)
 export async function GET() {

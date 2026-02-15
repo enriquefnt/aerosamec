@@ -1,13 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
-import bcrypt from 'bcryptjs';
-import { prisma } from '../../../../lib/db';
+import { NextRequest, NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
+import { prisma } from "@/lib/db";
+import { sendEmail } from "@/lib/emailer";
+import crypto from "crypto";
 
-// GET - Listar usuarios (solo para admins)
+// GET - Listar usuarios
 export async function GET() {
   try {
-    // Por ahora, simplificamos sin verificación de sesión para testing
-    // TODO: Agregar verificación de admin después
-
     const usuarios = await prisma.usuario.findMany({
       select: {
         id: true,
@@ -25,78 +24,68 @@ export async function GET() {
         createdAt: true,
         updatedAt: true,
       },
-      orderBy: {
-        createdAt: 'desc'
-      }
+      orderBy: { createdAt: "desc" },
     });
 
     return NextResponse.json({ usuarios });
   } catch (error) {
-    console.error('Error obteniendo usuarios:', error);
+    console.error("Error obteniendo usuarios:", error);
     return NextResponse.json(
-      { error: 'Error interno del servidor' },
+      { error: "Error interno del servidor" },
       { status: 500 }
     );
   }
 }
 
-// POST - Crear nuevo usuario (solo para admins)
+// POST - Crear usuario
 export async function POST(request: NextRequest) {
   try {
-    // Por ahora, simplificamos sin verificación de sesión para testing
-    // TODO: Agregar verificación de admin después
-
     const body = await request.json();
-    const { 
-      email, 
-      nombre, 
-      apellido, 
-      dni, 
-      telefono, 
-      rol, 
-      funcion 
-    } = body;
+    const { email, nombre, apellido, dni, telefono, rol, funcion } = body;
 
-    // Validaciones básicas
+    /* =========================
+       Validaciones básicas
+       ========================= */
     if (!email || !nombre || !apellido || !dni || !rol || !funcion) {
       return NextResponse.json(
-        { error: 'Todos los campos obligatorios deben ser completados' },
+        { error: "Campos obligatorios incompletos" },
         { status: 400 }
       );
     }
 
-    // Verificar si el email ya existe
-    const usuarioExistente = await prisma.usuario.findUnique({
-      where: { email }
-    });
+    /* =========================
+       Validaciones de unicidad
+       ========================= */
+    const [emailExistente, dniExistente] = await Promise.all([
+      prisma.usuario.findUnique({ where: { email } }),
+      prisma.usuario.findUnique({ where: { dni } }),
+    ]);
 
-    if (usuarioExistente) {
+    if (emailExistente) {
       return NextResponse.json(
-        { error: 'Ya existe un usuario con este email' },
+        { error: "Ya existe un usuario con este email" },
         { status: 400 }
       );
     }
-
-    // Verificar si el DNI ya existe
-    const dniExistente = await prisma.usuario.findUnique({
-      where: { dni }
-    });
 
     if (dniExistente) {
       return NextResponse.json(
-        { error: 'Ya existe un usuario con este DNI' },
+        { error: "Ya existe un usuario con este DNI" },
         { status: 400 }
       );
     }
 
-    // Generar contraseña temporal
-    const passwordTemporal = Math.random().toString(36).slice(-8);
+    /* =========================
+       Credenciales temporales
+       ========================= */
+    const passwordTemporal = crypto.randomBytes(4).toString("hex");
     const passwordHash = await bcrypt.hash(passwordTemporal, 10);
-    
-    // Generar token de verificación simple
-    const tokenVerificacion = Math.random().toString(36).slice(-16);
 
-    // Crear usuario
+    const tokenVerificacion = crypto.randomBytes(24).toString("hex");
+
+    /* =========================
+       Crear usuario
+       ========================= */
     const nuevoUsuario = await prisma.usuario.create({
       data: {
         email,
@@ -116,40 +105,63 @@ export async function POST(request: NextRequest) {
         email: true,
         nombre: true,
         apellido: true,
-        dni: true,
-        telefono: true,
         rol: true,
         funcion: true,
-        activo: true,
-        emailVerificado: true,
-        passwordTemporal: true,
         createdAt: true,
-      }
+      },
     });
 
-    // Generar URL de verificación para mostrar al admin
-    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+    /* =========================
+       Envío de email
+       ========================= */
+    const baseUrl =
+      process.env.NEXTAUTH_URL?.replace(/\/$/, "") ||
+      "http://localhost:3000";
+
     const verificationUrl = `${baseUrl}/verificar-email?token=${tokenVerificacion}`;
 
-    console.log(`📧 Usuario creado: ${email}`);
-    console.log(`🔑 Password temporal: ${passwordTemporal}`);
-    console.log(`🔗 URL verificación: ${verificationUrl}`);
+    await sendEmail({
+      to: email,
+      subject: "Acceso a AeroSAMEC – Verificación de cuenta",
+      html: `
+        <p>Hola <strong>${nombre}</strong>,</p>
 
-    return NextResponse.json({
-      message: 'Usuario creado exitosamente',
-      usuario: nuevoUsuario,
-      passwordTemporal, // Solo para mostrar al admin
-      emailInfo: {
-        success: true,
-        verificationUrl,
-        message: 'Email de verificación generado (ver detalles abajo)'
-      }
+        <p>Tu usuario fue creado en el sistema <strong>AeroSAMEC</strong>.</p>
+
+        <p>
+          <strong>Contraseña temporal:</strong><br/>
+          <code>${passwordTemporal}</code>
+        </p>
+
+        <p>
+          Para activar tu cuenta, hacé clic en el siguiente enlace:
+        </p>
+
+        <p>
+          <a href="${verificationUrl}">
+            Verificar cuenta
+          </a>
+        </p>
+
+        <p>
+          Por seguridad, deberás cambiar tu contraseña al primer ingreso.
+        </p>
+
+        <hr/>
+        <p style="font-size:12px;color:#666">
+          Si no solicitaste este acceso, ignorá este mensaje.
+        </p>
+      `,
     });
 
+    return NextResponse.json({
+      message: "Usuario creado y email enviado correctamente",
+      usuario: nuevoUsuario,
+    });
   } catch (error) {
-    console.error('Error creando usuario:', error);
+    console.error("Error creando usuario:", error);
     return NextResponse.json(
-      { error: 'Error interno del servidor' },
+      { error: "Error interno del servidor" },
       { status: 500 }
     );
   }

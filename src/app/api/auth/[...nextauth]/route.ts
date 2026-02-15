@@ -3,7 +3,7 @@ import type { Session } from 'next-auth';
 import type { JWT } from 'next-auth/jwt';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
-import { prisma } from '../../../../../lib/db';
+import { prisma } from '@/lib/db';
 
 const handler = NextAuth({
   providers: [

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../../../../lib/db';
+import { prisma } from '../../../../lib/db';
 
 // Función para calcular edad
 function calcularEdad(fechaNacimiento: Date, fechaReferencia: Date = new Date()) {

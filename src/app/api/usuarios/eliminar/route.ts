@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../../../../lib/db';
+import { prisma } from "@/lib/db";
 
 // DELETE - Eliminar usuario
 export async function DELETE(request: NextRequest) {
@@ -35,15 +35,19 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Eliminar usuario
-    await prisma.usuario.delete({
-      where: { id }
-    });
+    // 
+    await prisma.usuario.update({
+    where: { id },
+    data: {
+    activo: false
+  }
+});
 
     console.log(`🗑️ Usuario eliminado: ${usuario.email}`);
 
     return NextResponse.json({
-      message: 'Usuario eliminado exitosamente'
-    });
+    message: 'Usuario desactivado correctamente'
+});
 
   } catch (error) {
     console.error('Error eliminando usuario:', error);

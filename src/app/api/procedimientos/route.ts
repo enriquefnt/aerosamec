@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../../../lib/db'; // Ajusta la ruta si es diferente
+import { prisma } from '@/lib/db'; // Ajusta la ruta si es diferente
 
 // Función utilitaria para limpiar texto (trim y uppercase), con manejo de undefined
 function limpiarTexto(texto: string | undefined | null): string {

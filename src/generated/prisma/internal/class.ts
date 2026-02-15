@@ -59,7 +59,7 @@ export interface PrismaClientConstructor {
    * ```
    * const prisma = new PrismaClient()
    * // Fetch zero or more Users
-   * const users = await prisma.user.findMany()
+   * const users = await prisma.usuario.findMany()
    * ```
    * 
    * Read more in our [docs](https://pris.ly/d/client).
@@ -81,7 +81,7 @@ export interface PrismaClientConstructor {
  * ```
  * const prisma = new PrismaClient()
  * // Fetch zero or more Users
- * const users = await prisma.user.findMany()
+ * const users = await prisma.usuario.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).

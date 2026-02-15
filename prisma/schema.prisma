@@ -8,22 +8,29 @@ datasource db {
 }
 
 model Usuario {
-  id                 String                 @id @default(cuid())
-  email              String                 @unique
-  password           String
-  nombre             String
-  apellido           String
-  dni                String                 @unique
-  telefono           String?
-  rol                String
-  funcion            String
-  activo             Boolean                @default(true)
-  emailVerificado    Boolean                @default(false)
-  tokenVerificacion  String?
-  passwordTemporal   Boolean                @default(true)
-  ultimoLogin        DateTime?
-  createdAt          DateTime               @default(now())
-  updatedAt          DateTime               @updatedAt
+  id                String    @id @default(cuid())
+  email             String    @unique
+  password          String
+  nombre            String
+  apellido          String
+  dni               String    @unique
+  telefono          String?
+  rol               String
+  funcion           String
+  activo            Boolean   @default(true)
+  emailVerificado   Boolean   @default(false)
+  tokenVerificacion String?
+  passwordTemporal  Boolean   @default(true)
+  ultimoLogin       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  
+
+  // 🔐 Reset de contraseña
+  resetPasswordToken   String? @db.VarChar(255)
+  resetPasswordExpires DateTime? @map("resetTokenExpires")
+
   controlesSignos    ControlSignosVitales[]
   medicaciones       Medicacion[]
   procedimientos     Procedimiento[]

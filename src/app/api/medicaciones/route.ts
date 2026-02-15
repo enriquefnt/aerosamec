@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '../../../../lib/db';
+import { prisma } from '@/lib/db';
 
 // POST - Registrar nueva medicación
 export async function POST(request: NextRequest) {
