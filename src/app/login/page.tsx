@@ -31,8 +31,12 @@ export default function LoginPage() {
 
       // login ok → redirigir
       router.push("/");
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Error inesperado");
+      }
     } finally {
       setLoading(false);
     }

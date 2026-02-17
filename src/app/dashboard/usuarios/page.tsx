@@ -51,6 +51,8 @@ export default function GestionUsuariosPage() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [userToDelete, setUserToDelete] = useState<Usuario | null>(null);
   const [deletingUser, setDeletingUser] = useState(false);
+  const [reenviandoId, setReenviandoId] = useState<string | null>(null);
+
 
   // Form state para crear usuario
   const [formData, setFormData] = useState({
@@ -263,6 +265,33 @@ export default function GestionUsuariosPage() {
       setDeletingUser(false);
     }
   };
+
+  const reenviarVerificacion = async (userId: string) => {
+  setError('');
+  setSuccess('');
+  setReenviandoId(userId);
+
+  try {
+    const response = await fetch('/api/usuarios/reenviar-verificacion', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      setSuccess('Email de verificación reenviado correctamente');
+    } else {
+      setError(data.error || 'Error reenviando email');
+    }
+  } catch {
+    setError('Error de conexión');
+  } finally {
+    setReenviandoId(null);
+  }
+};
+
 
   const getRoleBadgeColor = (rol: string) => {
     switch (rol) {
@@ -489,7 +518,7 @@ export default function GestionUsuariosPage() {
                   </div>
                   
                   <div>
-                    <Label htmlFor="funcion">Función</Label>
+                    <Label htmlFor="funcion">Profesión</Label>
                     <Select value={formData.funcion} onValueChange={(value) => setFormData({...formData, funcion: value})}>
                       <SelectTrigger>
                         <SelectValue placeholder="Seleccionar función" />
@@ -596,17 +625,27 @@ export default function GestionUsuariosPage() {
                               onClick={() => toggleUsuarioActivo(usuario.id, usuario.activo)}
                               className={`px-2 ${usuario.activo ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'}`}
                             >
-                              {usuario.activo ? 'Desact.' : 'Act.'}
+                              {usuario.activo ? 'Desactivar' : 'Activar'}
                             </Button>
-                            <Button
+                            {/* <Button
                               size="sm"
                               variant="outline"
                               onClick={() => abrirEliminarUsuario(usuario)}
                               className="text-red-600 hover:text-red-700 px-2"
                             >
                               Elim.
-                            </Button>
+                            </Button> */}
                           </div>
+                          {!usuario.emailVerificado && (
+                            <Button
+                              disabled={reenviandoId === usuario.id}
+                              onClick={() => reenviarVerificacion(usuario.id)}
+                            >
+                              {reenviandoId === usuario.id ? "Enviando..." : "Reenviar email"}
+                            </Button>
+
+        )}
+
                         </TableCell>
                       </TableRow>
                     ))}
@@ -695,14 +734,25 @@ export default function GestionUsuariosPage() {
                     >
                       {usuario.activo ? 'Desactivar' : 'Activar'}
                     </Button>
-                    <Button
+                    {/* <Button
                       size="sm"
                       variant="outline"
                       onClick={() => abrirEliminarUsuario(usuario)}
                       className="flex-1 text-red-600 hover:text-red-700"
                     >
                       Eliminar
+                    </Button> */}
+                    {!usuario.emailVerificado && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => reenviarVerificacion(usuario.id)}
+                      className="flex-1 text-orange-600 hover:text-orange-700"
+                    >
+                      Reenviar email
                     </Button>
+)}
+
                   </div>
                 </div>
               </Card>

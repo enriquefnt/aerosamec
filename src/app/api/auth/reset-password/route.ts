@@ -5,7 +5,7 @@ import { prisma } from '@/lib/db';
 export async function POST(request: NextRequest) {
   const { token, newPassword } = await request.json();
 
-  if (!token || newPassword.length < 6) {
+  if (!token || !newPassword || newPassword.length < 6) {
     return NextResponse.json(
       { error: 'Datos inválidos' },
       { status: 400 }
@@ -15,7 +15,6 @@ export async function POST(request: NextRequest) {
   const usuario = await prisma.usuario.findFirst({
     where: {
       tokenVerificacion: token,
-      emailVerificado: true,
     },
   });
 
@@ -33,11 +32,12 @@ export async function POST(request: NextRequest) {
     data: {
       password: passwordHash,
       passwordTemporal: false,
-      tokenVerificacion: null,
+      emailVerificado: true,   // 👈 ACTIVACIÓN FINAL
+      tokenVerificacion: null, // 👈 SE CONSUME ACÁ
     },
   });
 
   return NextResponse.json({
-    message: 'Contraseña establecida correctamente',
+    message: 'Cuenta activada y contraseña establecida correctamente',
   });
 }

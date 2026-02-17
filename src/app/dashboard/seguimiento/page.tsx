@@ -2,7 +2,7 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -14,6 +14,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { obtenerHoraActualDispositivo, formatearFechaHoraLocal } from '@/lib/timezone';
+
 
 interface Traslado {
   id: string;
@@ -124,48 +125,50 @@ export default function SeguimientoMedicoPage() {
   };
 
   // Cargar traslados
-  useEffect(() => {
-    if (session?.user) {
-      cargarTraslados();
-    }
-  }, [session]);
-
-  const cargarTraslados = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('/api/traslados/operario');
-      const data = await response.json();
-
-      if (response.ok) {
-        setTraslados(data.traslados);
-        
-        // Si hay un traslado seleccionado, actualizarlo con los nuevos datos
-        if (trasladoSeleccionado) {
-          const trasladoActualizado = data.traslados.find((t: Traslado) => t.id === trasladoSeleccionado.id);
-          if (trasladoActualizado) {
-            setTrasladoSeleccionado(trasladoActualizado);
-            setEpicrisis(trasladoActualizado.epicrisis || '');
-          }
-        } else if (data.traslados.length > 0) {
-          // Si no hay traslado seleccionado, seleccionar el primero
-          seleccionarTraslado(data.traslados[0]);
-        }
-      } else {
-        setError(data.error || 'Error cargando traslados');
-      }
-    } catch {
-      setError('Error de conexión');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const seleccionarTraslado = (traslado: Traslado) => {
+   const seleccionarTraslado = (traslado: Traslado) => {
     setTrasladoSeleccionado(traslado);
     setNuevoEstado(traslado.estado);
     setEpicrisis(traslado.epicrisis || '');
     inicializarFormularios();
   };
+  
+  const cargarTraslados = useCallback(async () => {
+  try {
+    setLoading(true);
+
+    const response = await fetch("/api/traslados/operario");
+    const data = await response.json();
+
+    if (response.ok) {
+      setTraslados(data.traslados);
+
+      if (trasladoSeleccionado) {
+        const trasladoActualizado = data.traslados.find(
+          (t: Traslado) => t.id === trasladoSeleccionado.id
+        );
+
+        if (trasladoActualizado) {
+          setTrasladoSeleccionado(trasladoActualizado);
+          setEpicrisis(trasladoActualizado.epicrisis || "");
+        }
+      } else if (data.traslados.length > 0) {
+        seleccionarTraslado(data.traslados[0]);
+      }
+    } else {
+      setError(data.error || "Error cargando traslados");
+    }
+  } catch {
+    setError("Error de conexión");
+  } finally {
+    setLoading(false);
+  }
+}, [trasladoSeleccionado, seleccionarTraslado]);
+
+useEffect(() => {
+  cargarTraslados();
+}, [cargarTraslados]);
+
+ 
 
   // Función para guardar epicrisis
   const guardarEpicrisis = async () => {

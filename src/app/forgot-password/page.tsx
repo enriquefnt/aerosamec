@@ -14,7 +14,8 @@ export default function ForgotPasswordPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+
     e.preventDefault();
     setError("");
     setSuccess("");
@@ -95,7 +96,7 @@ export default function ForgotPasswordPage() {
             <Button
               type="submit"
               className="w-full bg-blue-600 hover:bg-blue-700"
-              disabled={loading}
+              disabled={loading || !!success}
             >
               {loading ? "Enviando..." : "Enviar enlace"}
             </Button>

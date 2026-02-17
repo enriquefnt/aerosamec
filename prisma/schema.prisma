@@ -20,6 +20,7 @@ model Usuario {
   activo            Boolean   @default(true)
   emailVerificado   Boolean   @default(false)
   tokenVerificacion String?
+  ultimoReenvioEmail    DateTime?
   passwordTemporal  Boolean   @default(true)
   ultimoLogin       DateTime?
   createdAt         DateTime  @default(now())
