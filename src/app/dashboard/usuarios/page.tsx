@@ -51,7 +51,10 @@ export default function GestionUsuariosPage() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [userToDelete, setUserToDelete] = useState<Usuario | null>(null);
   const [deletingUser, setDeletingUser] = useState(false);
-  const [reenviandoId, setReenviandoId] = useState<string | null>(null);
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const [reenviandoId, setReenviandoId] = useState<string | null>(null);
+
 
 
   // Form state para crear usuario
@@ -225,7 +228,7 @@ export default function GestionUsuariosPage() {
       setUpdatingUser(false);
     }
   };
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
   const abrirEliminarUsuario = (usuario: Usuario) => {
     setUserToDelete(usuario);
     setShowDeleteDialog(true);
