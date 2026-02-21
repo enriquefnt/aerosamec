@@ -1,201 +1,201 @@
-generator client {
-  provider = "prisma-client-js"
-}
+  generator client {
+    provider = "prisma-client-js"
+  }
 
-datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
-}
+  datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+  }
 
-model Usuario {
-  id                String    @id @default(cuid())
-  email             String    @unique
-  password          String
-  nombre            String
-  apellido          String
-  dni               String    @unique
-  telefono          String?
-  rol               String
-  funcion           String
-  activo            Boolean   @default(true)
-  emailVerificado   Boolean   @default(false)
-  tokenVerificacion String?
-  ultimoReenvioEmail    DateTime?
-  passwordTemporal  Boolean   @default(true)
-  ultimoLogin       DateTime?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  model Usuario {
+    id                String    @id @default(cuid())
+    email             String    @unique
+    password          String
+    nombre            String
+    apellido          String
+    dni               String    @unique
+    telefono          String?
+    rol               String
+    funcion           String
+    activo            Boolean   @default(true)
+    emailVerificado   Boolean   @default(false)
+    tokenVerificacion String?
+    ultimoReenvioEmail    DateTime?
+    passwordTemporal  Boolean   @default(true)
+    ultimoLogin       DateTime?
+    createdAt         DateTime  @default(now())
+    updatedAt         DateTime  @updatedAt
 
-  
+    
 
-  // 🔐 Reset de contraseña
-  resetPasswordToken   String? @db.VarChar(255)
-  resetPasswordExpires DateTime? @map("resetTokenExpires")
+    // 🔐 Reset de contraseña
+    resetPasswordToken   String? @db.VarChar(255)
+    resetPasswordExpires DateTime? @map("resetTokenExpires")
 
-  controlesSignos    ControlSignosVitales[]
-  medicaciones       Medicacion[]
-  procedimientos     Procedimiento[]
-  seguimientos       Seguimiento[]
-  trasladosAsignados Traslado[]             @relation("UsuarioAsignado")
-  trasladosCreados   Traslado[]             @relation("UsuarioCreador")
+    controlesSignos    ControlSignosVitales[]
+    medicaciones       Medicacion[]
+    procedimientos     Procedimiento[]
+    seguimientos       Seguimiento[]
+    trasladosAsignados Traslado[]             @relation("UsuarioAsignado")
+    trasladosCreados   Traslado[]             @relation("UsuarioCreador")
 
-  @@index([email])
-  @@index([dni])
-  @@map("usuarios")
-}
+    @@index([email])
+    @@index([dni])
+    @@map("usuarios")
+  }
 
-model Hospital {
-  id               String     @id @default(cuid())
-  nombre           String
-  direccion        String
-  ciudad           String
-  provincia        String
-  telefono         String?
-  email            String?
-  tipo             String
-  activo           Boolean    @default(true)
-  createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @updatedAt
-  trasladosDestino Traslado[] @relation("HospitalDestino")
-  trasladosOrigen  Traslado[] @relation("HospitalOrigen")
+  model Hospital {
+    id               String     @id @default(cuid())
+    nombre           String
+    direccion        String
+    ciudad           String
+    provincia        String
+    telefono         String?
+    email            String?
+    tipo             String
+    activo           Boolean    @default(true)
+    createdAt        DateTime   @default(now())
+    updatedAt        DateTime   @updatedAt
+    trasladosDestino Traslado[] @relation("HospitalDestino")
+    trasladosOrigen  Traslado[] @relation("HospitalOrigen")
 
-  @@index([nombre])
-  @@map("hospitales")
-}
+    @@index([nombre])
+    @@map("hospitales")
+  }
 
-model Traslado {
-  id                     String                 @id @default(cuid())
-  numeroTraslado         String                 @unique
-  fechaSolicitud         DateTime               @default(now())
-  fechaTraslado          DateTime?
-  fechaFinalizacion      DateTime?
-  pacienteNombre         String
-  pacienteApellido       String
-  pacienteDni            String
-  pacienteFechaNac       DateTime
-  pacienteEdadAnios      Int?
-  pacienteEdadMeses      Int?
-  pacienteEdadDias       Int?
-  pacienteSexo           String
-  pacientePeso           Float?
-  pacienteAltura         Float?
-  pacienteDomicilio      String
-  pacienteLocalidad      String
-  tieneCobertura         Boolean                @default(false)
-  numeroObraSocial       String?
-  institucionSolicitante String
-  profesionalNombre      String
-  profesionalCelular     String
-  motivoPedido           String
-  diagnosticos           String
-  codigoTraslado         String
-  horarioSalida          DateTime?
-  medicoNombre           String?
-  enfermeroNombre        String?
-  pilotoNombre           String?
-  matriculaAeronave      String?
-  tipoComplejidad        String
-  categoriaPaciente      String
-  observaciones          String?
-  estado                 String                 @default("SOLICITADO")
-  prioridad              String                 @default("NORMAL")
-  hospitalOrigenId       String
-  hospitalDestinoId      String
-  usuarioCreadorId       String
-  usuarioAsignadoId      String?
-  epicrisis              String?
-  createdAt              DateTime               @default(now())
-  updatedAt              DateTime               @updatedAt
-  controlesSignos        ControlSignosVitales[]
-  medicaciones           Medicacion[]
-  procedimientos         Procedimiento[]
-  seguimientos           Seguimiento[]
-  hospitalDestino        Hospital               @relation("HospitalDestino", fields: [hospitalDestinoId], references: [id])
-  hospitalOrigen         Hospital               @relation("HospitalOrigen", fields: [hospitalOrigenId], references: [id])
-  usuarioAsignado        Usuario?               @relation("UsuarioAsignado", fields: [usuarioAsignadoId], references: [id])
-  usuarioCreador         Usuario                @relation("UsuarioCreador", fields: [usuarioCreadorId], references: [id])
+  model Traslado {
+    id                     String                 @id @default(cuid())
+    numeroTraslado         String                 @unique
+    fechaSolicitud         DateTime               @default(now())
+    fechaTraslado          DateTime?
+    fechaFinalizacion      DateTime?
+    pacienteNombre         String
+    pacienteApellido       String
+    pacienteDni            String
+    pacienteFechaNac       DateTime
+    pacienteEdadAnios      Int?
+    pacienteEdadMeses      Int?
+    pacienteEdadDias       Int?
+    pacienteSexo           String
+    pacientePeso           Float?
+    pacienteAltura         Float?
+    pacienteDomicilio      String
+    pacienteLocalidad      String
+    tieneCobertura         Boolean                @default(false)
+    numeroObraSocial       String?
+    institucionSolicitante String
+    profesionalNombre      String
+    profesionalCelular     String
+    motivoPedido           String
+    diagnosticos           String
+    codigoTraslado         String
+    horarioSalida          DateTime?
+    medicoNombre           String?
+    enfermeroNombre        String?
+    pilotoNombre           String?
+    matriculaAeronave      String?
+    tipoComplejidad        String
+    categoriaPaciente      String
+    observaciones          String?
+    estado                 String                 @default("SOLICITADO")
+    prioridad              String                 @default("NORMAL")
+    hospitalOrigenId       String
+    hospitalDestinoId      String
+    usuarioCreadorId       String
+    usuarioAsignadoId      String?
+    epicrisis              String?
+    createdAt              DateTime               @default(now())
+    updatedAt              DateTime               @updatedAt
+    controlesSignos        ControlSignosVitales[]
+    medicaciones           Medicacion[]
+    procedimientos         Procedimiento[]
+    seguimientos           Seguimiento[]
+    hospitalDestino        Hospital               @relation("HospitalDestino", fields: [hospitalDestinoId], references: [id])
+    hospitalOrigen         Hospital               @relation("HospitalOrigen", fields: [hospitalOrigenId], references: [id])
+    usuarioAsignado        Usuario?               @relation("UsuarioAsignado", fields: [usuarioAsignadoId], references: [id])
+    usuarioCreador         Usuario                @relation("UsuarioCreador", fields: [usuarioCreadorId], references: [id])
 
-  @@index([numeroTraslado])
-  @@index([pacienteDni])
-  @@index([estado])
-  @@index([hospitalDestinoId], map: "traslados_hospitalDestinoId_fkey")
-  @@index([hospitalOrigenId], map: "traslados_hospitalOrigenId_fkey")
-  @@index([usuarioAsignadoId], map: "traslados_usuarioAsignadoId_fkey")
-  @@index([usuarioCreadorId], map: "traslados_usuarioCreadorId_fkey")
-  @@map("traslados")
-}
+    @@index([numeroTraslado])
+    @@index([pacienteDni])
+    @@index([estado])
+    @@index([hospitalDestinoId], map: "traslados_hospitalDestinoId_fkey")
+    @@index([hospitalOrigenId], map: "traslados_hospitalOrigenId_fkey")
+    @@index([usuarioAsignadoId], map: "traslados_usuarioAsignadoId_fkey")
+    @@index([usuarioCreadorId], map: "traslados_usuarioCreadorId_fkey")
+    @@map("traslados")
+  }
 
-model Procedimiento {
-  id            String   @id @default(cuid())
-  trasladoId    String
-  usuarioId     String
-  tipo          String
-  descripcion   String
-  observaciones String?
-  fechaHora     DateTime @default(now())
-  createdAt     DateTime @default(now())
-  traslado      Traslado @relation(fields: [trasladoId], references: [id], onDelete: Cascade)
-  usuario       Usuario  @relation(fields: [usuarioId], references: [id])
+  model Procedimiento {
+    id            String   @id @default(cuid())
+    trasladoId    String
+    usuarioId     String
+    tipo          String
+    descripcion   String
+    observaciones String?
+    fechaHora     DateTime @default(now())
+    createdAt     DateTime @default(now())
+    traslado      Traslado @relation(fields: [trasladoId], references: [id], onDelete: Cascade)
+    usuario       Usuario  @relation(fields: [usuarioId], references: [id])
 
-  @@index([trasladoId])
-  @@index([usuarioId], map: "procedimientos_usuarioId_fkey")
-  @@map("procedimientos")
-}
+    @@index([trasladoId])
+    @@index([usuarioId], map: "procedimientos_usuarioId_fkey")
+    @@map("procedimientos")
+  }
 
-model Medicacion {
-  id            String   @id @default(cuid())
-  trasladoId    String
-  usuarioId     String
-  medicamento   String
-  dosis         String
-  via           String
-  observaciones String?
-  fechaHora     DateTime @default(now())
-  createdAt     DateTime @default(now())
-  traslado      Traslado @relation(fields: [trasladoId], references: [id], onDelete: Cascade)
-  usuario       Usuario  @relation(fields: [usuarioId], references: [id])
+  model Medicacion {
+    id            String   @id @default(cuid())
+    trasladoId    String
+    usuarioId     String
+    medicamento   String
+    dosis         String
+    via           String
+    observaciones String?
+    fechaHora     DateTime @default(now())
+    createdAt     DateTime @default(now())
+    traslado      Traslado @relation(fields: [trasladoId], references: [id], onDelete: Cascade)
+    usuario       Usuario  @relation(fields: [usuarioId], references: [id])
 
-  @@index([trasladoId])
-  @@index([usuarioId], map: "medicaciones_usuarioId_fkey")
-  @@map("medicaciones")
-}
+    @@index([trasladoId])
+    @@index([usuarioId], map: "medicaciones_usuarioId_fkey")
+    @@map("medicaciones")
+  }
 
-model Seguimiento {
-  id            String   @id @default(cuid())
-  trasladoId    String
-  usuarioId     String
-  tipo          String
-  descripcion   String
-  observaciones String?
-  fechaHora     DateTime @default(now())
-  createdAt     DateTime @default(now())
-  traslado      Traslado @relation(fields: [trasladoId], references: [id], onDelete: Cascade)
-  usuario       Usuario  @relation(fields: [usuarioId], references: [id])
+  model Seguimiento {
+    id            String   @id @default(cuid())
+    trasladoId    String
+    usuarioId     String
+    tipo          String
+    descripcion   String
+    observaciones String?
+    fechaHora     DateTime @default(now())
+    createdAt     DateTime @default(now())
+    traslado      Traslado @relation(fields: [trasladoId], references: [id], onDelete: Cascade)
+    usuario       Usuario  @relation(fields: [usuarioId], references: [id])
 
-  @@index([trasladoId])
-  @@index([tipo])
-  @@index([usuarioId], map: "seguimientos_usuarioId_fkey")
-  @@map("seguimientos")
-}
+    @@index([trasladoId])
+    @@index([tipo])
+    @@index([usuarioId], map: "seguimientos_usuarioId_fkey")
+    @@map("seguimientos")
+  }
 
-model ControlSignosVitales {
-  id                     String   @id @default(cuid())
-  trasladoId             String
-  usuarioId              String
-  fechaHora              DateTime @default(now())
-  frecuenciaCardiaca     Int?
-  frecuenciaRespiratoria Int?
-  presionArterialSist    Int?
-  presionArterialDiast   Int?
-  temperatura            Float?
-  saturacionO2           Int?
-  escalaGlasgow          Int?
-  observaciones          String?
-  createdAt              DateTime @default(now())
-  traslado               Traslado @relation(fields: [trasladoId], references: [id], onDelete: Cascade)
-  usuario                Usuario  @relation(fields: [usuarioId], references: [id])
+  model ControlSignosVitales {
+    id                     String   @id @default(cuid())
+    trasladoId             String
+    usuarioId              String
+    fechaHora              DateTime @default(now())
+    frecuenciaCardiaca     Int?
+    frecuenciaRespiratoria Int?
+    presionArterialSist    Int?
+    presionArterialDiast   Int?
+    temperatura            Float?
+    saturacionO2           Int?
+    escalaGlasgow          Int?
+    observaciones          String?
+    createdAt              DateTime @default(now())
+    traslado               Traslado @relation(fields: [trasladoId], references: [id], onDelete: Cascade)
+    usuario                Usuario  @relation(fields: [usuarioId], references: [id])
 
-  @@index([trasladoId])
-  @@index([usuarioId], map: "controles_signos_vitales_usuarioId_fkey")
-  @@map("controles_signos_vitales")
-}
+    @@index([trasladoId])
+    @@index([usuarioId], map: "controles_signos_vitales_usuarioId_fkey")
+    @@map("controles_signos_vitales")
+  }

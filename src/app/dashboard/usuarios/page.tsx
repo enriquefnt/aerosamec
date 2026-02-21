@@ -385,7 +385,7 @@ const [reenviandoId, setReenviandoId] = useState<string | null>(null);
         )}
 
         {/* Panel de información del email */}
-        {emailInfo && (
+        {/* {emailInfo && (
           <Card className="mb-6 bg-blue-50 border-blue-200">
             <CardHeader>
               <CardTitle className="text-lg text-blue-900">📧 Información de Verificación de Email</CardTitle>
@@ -431,7 +431,7 @@ const [reenviandoId, setReenviandoId] = useState<string | null>(null);
               </div>
             </CardContent>
           </Card>
-        )}
+        )} */}
 
         {/* Header con botón crear */}
         <div className="flex justify-between items-center mb-6">
@@ -524,7 +524,7 @@ const [reenviandoId, setReenviandoId] = useState<string | null>(null);
                     <Label htmlFor="funcion">Profesión</Label>
                     <Select value={formData.funcion} onValueChange={(value) => setFormData({...formData, funcion: value})}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar función" />
+                        <SelectValue placeholder="Seleccionar Profesión" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="ADMINISTRATIVO">Administrativo</SelectItem>
