@@ -14,7 +14,10 @@ export async function POST(request: NextRequest) {
 
   const usuario = await prisma.usuario.findFirst({
     where: {
-      tokenVerificacion: token,
+      resetPasswordToken: token,
+      resetPasswordExpires: {
+        gt: new Date(),
+      },
     },
   });
 
@@ -32,8 +35,9 @@ export async function POST(request: NextRequest) {
     data: {
       password: passwordHash,
       passwordTemporal: false,
-      emailVerificado: true,   // 👈 ACTIVACIÓN FINAL
-      tokenVerificacion: null, // 👈 SE CONSUME ACÁ
+      emailVerificado: true,      // 👈 ACTIVACIÓN FINAL
+      resetPasswordToken: null,   // 👈 SE CONSUME ACÁ
+      resetPasswordExpires: null, // 👈 SE CONSUME ACÁ
     },
   });
 
