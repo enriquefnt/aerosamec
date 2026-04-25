@@ -1,0 +1,41 @@
+{
+  "usuarios": [
+    {
+      "id": "cmksb2j9n0000pdhh80deo5bm",
+      "email": "admin@aerosamec.com",
+      "password": "$2a$12$Hd2gBq.pQ0ZggNhF7msXYugSgCeLADEf9THIynw6MFcTS7lVCHV6y",
+      "nombre": "Admin",
+      "apellido": "Sistema",
+      "dni": "12345678",
+      "telefono": null,
+      "rol": "ADMIN",
+      "funcion": "ADMINISTRATIVO",
+      "activo": true,
+      "emailVerificado": true,
+      "tokenVerificacion": null,
+      "passwordTemporal": false,
+      "ultimoLogin": null,
+      "createdAt": "2026-01-24T12:48:23.818Z",
+      "updatedAt": "2026-01-24T12:48:23.818Z"
+    },
+    {
+      "id": "cmksb2j9w0001pdhhvsbg6h4u",
+      "email": "coord@aerosamec.com",
+      "password": "$2a$12$HSIP8bJPrwdV.bsmNDIV1urpK93Bf1xdkdza/5D7gGHc8Zm3OicDi",
+      "nombre": "Coordinador",
+      "apellido": "Medico",
+      "dni": "87654321",
+      "telefono": null,
+      "rol": "COORDINADOR",
+      "funcion": "MEDICO",
+      "activo": true,
+      "emailVerificado": true,
+      "tokenVerificacion": null,
+      "passwordTemporal": false,
+      "ultimoLogin": null,
+      "createdAt": "2026-01-24T12:48:23.829Z",
+      "updatedAt": "2026-01-24T12:48:23.829Z"
+    }
+  ],
+  "traslados": []
+}
