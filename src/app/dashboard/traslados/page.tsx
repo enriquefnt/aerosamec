@@ -2,11 +2,7 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-<<<<<<< HEAD
-import { useEffect, useState } from 'react';
-=======
 import { useEffect, useMemo, useState } from 'react';
->>>>>>> origin/ramaDEV
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -25,8 +21,6 @@ interface Hospital {
   ciudad: string;
 }
 
-<<<<<<< HEAD
-=======
 interface UsuarioLite {
   id: string;
   nombre: string;
@@ -35,7 +29,6 @@ interface UsuarioLite {
   activo: boolean;
 }
 
->>>>>>> origin/ramaDEV
 interface Traslado {
   id: string;
   numeroTraslado: string;
@@ -137,12 +130,6 @@ export default function GestionTrasladosPage() {
   const [showEquipoDialog, setShowEquipoDialog] = useState(false);
   const [trasladoEquipo, setTrasladoEquipo] = useState<Traslado | null>(null);
   const [updatingEquipo, setUpdatingEquipo] = useState(false);
-<<<<<<< HEAD
-  const [equipoData, setEquipoData] = useState({
-    horarioSalida: '',
-    medicoNombre: '',
-    enfermeroNombre: '',
-=======
   const [usuarios, setUsuarios] = useState<UsuarioLite[]>([]);
   const [medicoSearch, setMedicoSearch] = useState('');
   const [enfermeroSearch, setEnfermeroSearch] = useState('');
@@ -152,7 +139,6 @@ export default function GestionTrasladosPage() {
     medicoUsuarioId: '',
     enfermeroNombre: '',
     enfermeroUsuarioId: '',
->>>>>>> origin/ramaDEV
     pilotoNombre: '',
     matriculaAeronave: ''
   });
@@ -206,10 +192,7 @@ export default function GestionTrasladosPage() {
     if (session?.user && (session.user.rol === 'COORDINADOR' || session.user.rol === 'ADMIN')) {
       cargarTraslados();
       cargarHospitales();
-<<<<<<< HEAD
-=======
       cargarUsuarios();
->>>>>>> origin/ramaDEV
     }
   }, [session]);
 
@@ -244,8 +227,6 @@ export default function GestionTrasladosPage() {
     }
   };
 
-<<<<<<< HEAD
-=======
   const normalizarFuncion = (valor?: string) =>
     (valor || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
 
@@ -280,7 +261,6 @@ export default function GestionTrasladosPage() {
     return nombreCompleto.includes(q);
   });
 
->>>>>>> origin/ramaDEV
   const crearTraslado = async (e: React.FormEvent) => {
     e.preventDefault();
     setCreatingTraslado(true);
@@ -459,13 +439,9 @@ export default function GestionTrasladosPage() {
     setEquipoData({
       horarioSalida: traslado.horarioSalida ? traslado.horarioSalida.slice(0, 16) : '',
       medicoNombre: traslado.medicoNombre || '',
-<<<<<<< HEAD
-      enfermeroNombre: traslado.enfermeroNombre || '',
-=======
       medicoUsuarioId: '',
       enfermeroNombre: traslado.enfermeroNombre || '',
       enfermeroUsuarioId: '',
->>>>>>> origin/ramaDEV
       pilotoNombre: traslado.pilotoNombre || '',
       matriculaAeronave: traslado.matriculaAeronave || ''
     });
@@ -1479,24 +1455,6 @@ export default function GestionTrasladosPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-<<<<<<< HEAD
-                    <Label htmlFor="medicoNombre">Médico a Cargo</Label>
-                    <Input
-                      id="medicoNombre"
-                      value={equipoData.medicoNombre}
-                      onChange={(e) => setEquipoData({...equipoData, medicoNombre: e.target.value})}
-                      placeholder="Dr. Juan Pérez"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="enfermeroNombre">Enfermero</Label>
-                    <Input
-                      id="enfermeroNombre"
-                      value={equipoData.enfermeroNombre}
-                      onChange={(e) => setEquipoData({...equipoData, enfermeroNombre: e.target.value})}
-                      placeholder="Enf. María García"
-                    />
-=======
                     <Label htmlFor="medicoSearch">Médico a Cargo</Label>
                     <Input
                       id="medicoSearch"
@@ -1565,7 +1523,6 @@ export default function GestionTrasladosPage() {
                         })}
                       </SelectContent>
                     </Select>
->>>>>>> origin/ramaDEV
                   </div>
                 </div>
 

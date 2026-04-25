@@ -20,13 +20,7 @@
       }
     ],
     "paths": {
-<<<<<<< HEAD
-      "@/*": ["src/*"],
-      //"@components/*": ["components/*"],
-      //"@lib/*": ["../lib/*"] 
-=======
       "@/*": ["src/*"]
->>>>>>> origin/ramaDEV
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "smtp-test.js"],
