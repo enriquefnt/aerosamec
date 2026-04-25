@@ -4,11 +4,11 @@ import { prisma } from '@/lib/db'
 
 export async function POST(request: NextRequest) {
   try {
-    const { token, newPassword } = await request.json();
+    const { token, temporaryPassword, newPassword } = await request.json();
 
-    if (!token || !newPassword) {
+    if (!token || !temporaryPassword || !newPassword) {
       return NextResponse.json(
-        { error: 'Token y nueva contraseña son requeridos' },
+        { error: 'Token, contraseña provisoria y nueva contraseña son requeridos' },
         { status: 400 }
       );
     }
@@ -42,6 +42,16 @@ export async function POST(request: NextRequest) {
     if (tokenAge > maxAge) {
       return NextResponse.json(
         { error: 'Token expirado. Solicite un nuevo enlace de verificación.' },
+        { status: 400 }
+      );
+    }
+
+    // Validar contraseña provisoria contra hash actual
+    const provisionalPasswordOk = await bcrypt.compare(temporaryPassword, usuario.password);
+
+    if (!provisionalPasswordOk) {
+      return NextResponse.json(
+        { error: 'La contraseña provisoria es incorrecta' },
         { status: 400 }
       );
     }

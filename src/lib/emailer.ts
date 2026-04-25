@@ -16,15 +16,13 @@ const transporter = nodemailer.createTransport({
 /**
  * Verifica conexión SMTP al iniciar (opcional pero útil)
  */
-if (process.env.NODE_ENV === "development") {
-  transporter.verify()
-    .then(() => {
-      console.log("📧 SMTP listo para enviar emails");
-    })
-    .catch(err => {
-      console.error("❌ Error SMTP:", err);
-    });
-}
+transporter.verify()
+  .then(() => {
+    console.log("📧 SMTP listo para enviar emails");
+  })
+  .catch(err => {
+    console.error("❌ Error SMTP:", err);
+  });
 
 /**
  * Función genérica de envío

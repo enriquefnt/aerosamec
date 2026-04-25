@@ -96,7 +96,7 @@ export default function SeguimientoMedicoPage() {
   };
 
   // Inicializar formularios con hora actual
-  const inicializarFormularios = () => {
+  const inicializarFormularios = useCallback(() => {
     const horaActual = obtenerFechaHoraActual();
     setProcedimientoForm({
       tipo: '',
@@ -122,51 +122,64 @@ export default function SeguimientoMedicoPage() {
       observaciones: '',
       fechaHora: horaActual
     });
-  };
+  }, []);
 
   // Cargar traslados
-   const seleccionarTraslado = (traslado: Traslado) => {
+  const seleccionarTraslado = useCallback((traslado: Traslado) => {
     setTrasladoSeleccionado(traslado);
     setNuevoEstado(traslado.estado);
     setEpicrisis(traslado.epicrisis || '');
     inicializarFormularios();
-  };
-  
+  }, [inicializarFormularios]);
+
   const cargarTraslados = useCallback(async () => {
-  try {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    const response = await fetch("/api/traslados/operario");
-    const data = await response.json();
+      const response = await fetch("/api/traslados/operario");
+      const data = await response.json();
 
-    if (response.ok) {
-      setTraslados(data.traslados);
+      if (response.ok) {
+        const nuevosTraslados: Traslado[] = data.traslados || [];
+        setTraslados(nuevosTraslados);
 
-      if (trasladoSeleccionado) {
-        const trasladoActualizado = data.traslados.find(
-          (t: Traslado) => t.id === trasladoSeleccionado.id
-        );
+        setTrasladoSeleccionado((prevSeleccionado) => {
+          if (prevSeleccionado) {
+            const trasladoActualizado = nuevosTraslados.find(
+              (t: Traslado) => t.id === prevSeleccionado.id
+            );
 
-        if (trasladoActualizado) {
-          setTrasladoSeleccionado(trasladoActualizado);
-          setEpicrisis(trasladoActualizado.epicrisis || "");
-        }
-      } else if (data.traslados.length > 0) {
-        seleccionarTraslado(data.traslados[0]);
+            if (trasladoActualizado) {
+              setNuevoEstado(trasladoActualizado.estado);
+              setEpicrisis(trasladoActualizado.epicrisis || "");
+              return trasladoActualizado;
+            }
+          }
+
+          if (nuevosTraslados.length > 0) {
+            const primero = nuevosTraslados[0];
+            setNuevoEstado(primero.estado);
+            setEpicrisis(primero.epicrisis || '');
+            return primero;
+          }
+
+          setNuevoEstado('');
+          setEpicrisis('');
+          return null;
+        });
+      } else {
+        setError(data.error || "Error cargando traslados");
       }
-    } else {
-      setError(data.error || "Error cargando traslados");
+    } catch {
+      setError("Error de conexión");
+    } finally {
+      setLoading(false);
     }
-  } catch {
-    setError("Error de conexión");
-  } finally {
-    setLoading(false);
-  }
-}, [trasladoSeleccionado, seleccionarTraslado]);
+  }, []);
 
-useEffect(() => {
-  cargarTraslados();
-}, [cargarTraslados]);
+  useEffect(() => {
+    cargarTraslados();
+  }, [cargarTraslados]);
 
  
 

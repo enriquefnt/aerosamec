@@ -68,7 +68,7 @@ export default function VerificarEmailPage() {
               <Button
                 className="w-full"
                 onClick={() =>
-                  router.push(`/reset-password?token=${token}`)
+                  router.push(`/cambiar-password?token=${token}`)
                 }
               >
                 Continuar

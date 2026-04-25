@@ -2,7 +2,11 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+<<<<<<< HEAD
 import { useEffect, useState } from 'react';
+=======
+import { useEffect, useMemo, useState } from 'react';
+>>>>>>> origin/ramaDEV
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -21,6 +25,17 @@ interface Hospital {
   ciudad: string;
 }
 
+<<<<<<< HEAD
+=======
+interface UsuarioLite {
+  id: string;
+  nombre: string;
+  apellido: string;
+  funcion: string;
+  activo: boolean;
+}
+
+>>>>>>> origin/ramaDEV
 interface Traslado {
   id: string;
   numeroTraslado: string;
@@ -122,10 +137,22 @@ export default function GestionTrasladosPage() {
   const [showEquipoDialog, setShowEquipoDialog] = useState(false);
   const [trasladoEquipo, setTrasladoEquipo] = useState<Traslado | null>(null);
   const [updatingEquipo, setUpdatingEquipo] = useState(false);
+<<<<<<< HEAD
   const [equipoData, setEquipoData] = useState({
     horarioSalida: '',
     medicoNombre: '',
     enfermeroNombre: '',
+=======
+  const [usuarios, setUsuarios] = useState<UsuarioLite[]>([]);
+  const [medicoSearch, setMedicoSearch] = useState('');
+  const [enfermeroSearch, setEnfermeroSearch] = useState('');
+  const [equipoData, setEquipoData] = useState({
+    horarioSalida: '',
+    medicoNombre: '',
+    medicoUsuarioId: '',
+    enfermeroNombre: '',
+    enfermeroUsuarioId: '',
+>>>>>>> origin/ramaDEV
     pilotoNombre: '',
     matriculaAeronave: ''
   });
@@ -179,6 +206,10 @@ export default function GestionTrasladosPage() {
     if (session?.user && (session.user.rol === 'COORDINADOR' || session.user.rol === 'ADMIN')) {
       cargarTraslados();
       cargarHospitales();
+<<<<<<< HEAD
+=======
+      cargarUsuarios();
+>>>>>>> origin/ramaDEV
     }
   }, [session]);
 
@@ -213,6 +244,43 @@ export default function GestionTrasladosPage() {
     }
   };
 
+<<<<<<< HEAD
+=======
+  const normalizarFuncion = (valor?: string) =>
+    (valor || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+
+  const cargarUsuarios = async () => {
+    try {
+      const response = await fetch('/api/usuarios');
+      const data = await response.json();
+
+      if (response.ok) {
+        setUsuarios((data.usuarios || []).filter((u: UsuarioLite) => u.activo));
+      }
+    } catch {
+      console.error('Error cargando usuarios');
+    }
+  };
+
+  const medicosDisponibles = usuarios.filter((u: UsuarioLite) => {
+    const esMedico = normalizarFuncion(u.funcion).includes('MEDIC');
+    if (!esMedico) return false;
+    const q = medicoSearch.trim().toLowerCase();
+    if (!q) return true;
+    const nombreCompleto = `${u.nombre} ${u.apellido}`.toLowerCase();
+    return nombreCompleto.includes(q);
+  });
+
+  const enfermerosDisponibles = usuarios.filter((u: UsuarioLite) => {
+    const esEnfermero = normalizarFuncion(u.funcion).includes('ENFERMER');
+    if (!esEnfermero) return false;
+    const q = enfermeroSearch.trim().toLowerCase();
+    if (!q) return true;
+    const nombreCompleto = `${u.nombre} ${u.apellido}`.toLowerCase();
+    return nombreCompleto.includes(q);
+  });
+
+>>>>>>> origin/ramaDEV
   const crearTraslado = async (e: React.FormEvent) => {
     e.preventDefault();
     setCreatingTraslado(true);
@@ -391,7 +459,13 @@ export default function GestionTrasladosPage() {
     setEquipoData({
       horarioSalida: traslado.horarioSalida ? traslado.horarioSalida.slice(0, 16) : '',
       medicoNombre: traslado.medicoNombre || '',
+<<<<<<< HEAD
       enfermeroNombre: traslado.enfermeroNombre || '',
+=======
+      medicoUsuarioId: '',
+      enfermeroNombre: traslado.enfermeroNombre || '',
+      enfermeroUsuarioId: '',
+>>>>>>> origin/ramaDEV
       pilotoNombre: traslado.pilotoNombre || '',
       matriculaAeronave: traslado.matriculaAeronave || ''
     });
@@ -1405,6 +1479,7 @@ export default function GestionTrasladosPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
+<<<<<<< HEAD
                     <Label htmlFor="medicoNombre">Médico a Cargo</Label>
                     <Input
                       id="medicoNombre"
@@ -1421,6 +1496,76 @@ export default function GestionTrasladosPage() {
                       onChange={(e) => setEquipoData({...equipoData, enfermeroNombre: e.target.value})}
                       placeholder="Enf. María García"
                     />
+=======
+                    <Label htmlFor="medicoSearch">Médico a Cargo</Label>
+                    <Input
+                      id="medicoSearch"
+                      value={medicoSearch}
+                      onChange={(e) => setMedicoSearch(e.target.value)}
+                      placeholder="Buscar médico..."
+                      className="mb-2"
+                    />
+                    <Select
+                      value={equipoData.medicoUsuarioId}
+                      onValueChange={(value) => {
+                        const medico = medicosDisponibles.find((m) => m.id === value);
+                        setEquipoData({
+                          ...equipoData,
+                          medicoUsuarioId: value,
+                          medicoNombre: medico ? `${medico.nombre} ${medico.apellido}` : ''
+                        });
+                      }}
+                    >
+                      <SelectTrigger id="medicoNombre">
+                        <SelectValue placeholder="Seleccionar médico" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {medicosDisponibles.map((m) => {
+                          const nombreCompleto = `${m.nombre} ${m.apellido}`;
+                          return (
+                            <SelectItem key={m.id} value={m.id}>
+                              {nombreCompleto}
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="enfermeroSearch">Enfermero</Label>
+                    <Input
+                      id="enfermeroSearch"
+                      value={enfermeroSearch}
+                      onChange={(e) => setEnfermeroSearch(e.target.value)}
+                      placeholder="Buscar enfermero..."
+                      className="mb-2"
+                    />
+                    <Select
+                      value={equipoData.enfermeroUsuarioId}
+                      onValueChange={(value) => {
+                        const enfermero = enfermerosDisponibles.find((e) => e.id === value);
+                        setEquipoData({
+                          ...equipoData,
+                          enfermeroUsuarioId: value,
+                          enfermeroNombre: enfermero ? `${enfermero.nombre} ${enfermero.apellido}` : ''
+                        });
+                      }}
+                    >
+                      <SelectTrigger id="enfermeroNombre">
+                        <SelectValue placeholder="Seleccionar enfermero" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {enfermerosDisponibles.map((e) => {
+                          const nombreCompleto = `${e.nombre} ${e.apellido}`;
+                          return (
+                            <SelectItem key={e.id} value={e.id}>
+                              {nombreCompleto}
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+>>>>>>> origin/ramaDEV
                   </div>
                 </div>
 

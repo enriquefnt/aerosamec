@@ -13,7 +13,14 @@ const handler = NextAuth({
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' }
       },
-      async authorize(credentials: { email?: string; password?: string } | undefined) {
+      async authorize(credentials: { email?: string; password?: string } | undefined): Promise<{
+        id: string;
+        email: string;
+        name: string;
+        rol: string;
+        funcion: string;
+        telefono?: string;
+      } | null> {
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
@@ -43,6 +50,7 @@ const handler = NextAuth({
             email: usuario.email,
             name: `${usuario.nombre} ${usuario.apellido}`,
             rol: usuario.rol,
+            funcion: usuario.funcion,
             telefono: usuario.telefono || undefined
           };
         } catch (error) {
@@ -60,11 +68,12 @@ const handler = NextAuth({
       token,
       user
     }: {
-      token: JWT & { rol?: string; telefono?: string };
-      user?: { rol?: string; telefono?: string } | undefined;
+      token: JWT & { rol?: string; funcion?: string; telefono?: string };
+      user?: { rol?: string; funcion?: string; telefono?: string; id?: string; email?: string; name?: string } | undefined;
     }) {
       if (user) {
       token.rol = user.rol || 'USER';  // Valor por defecto si es undefined
+      token.funcion = user.funcion || '';
       token.telefono = user.telefono || '';  // Valor por defecto si es undefined
       }
       return token;
@@ -74,11 +83,12 @@ const handler = NextAuth({
       token
     }: {
       session: Session;
-      token: JWT & { rol?: string; telefono?: string; sub?: string };
+      token: JWT & { rol?: string; funcion?: string; telefono?: string; sub?: string };
     }) {
       if (token && session.user) {
         session.user.id = token.sub || '';
         session.user.rol = token.rol || '';
+        session.user.funcion = token.funcion || '';
         session.user.telefono = token.telefono;
       }
       return session;

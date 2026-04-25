@@ -8,8 +8,10 @@ export async function PUT(request: NextRequest) {
     const { 
       id, 
       horarioSalida, 
-      medicoNombre, 
-      enfermeroNombre, 
+      medicoNombre,
+      medicoUsuarioId,
+      enfermeroNombre,
+      enfermeroUsuarioId,
       pilotoNombre, 
       matriculaAeronave 
     } = body;
@@ -35,22 +37,26 @@ export async function PUT(request: NextRequest) {
 
     // Preparar datos de actualización
     interface UpdateData {
-  updatedAt: Date;
-  horarioSalida?: Date;
-  medicoNombre?: string;
-  enfermeroNombre?: string;
-  pilotoNombre?: string;
-  matriculaAeronave?: string;
-  observaciones?: string;
-}
+      updatedAt: Date;
+      horarioSalida?: Date;
+      medicoNombre?: string | null;
+      medicoUsuarioId?: string | null;
+      enfermeroNombre?: string | null;
+      enfermeroUsuarioId?: string | null;
+      pilotoNombre?: string;
+      matriculaAeronave?: string;
+      observaciones?: string;
+    }
 
-const updateData: UpdateData = {
-  updatedAt: new Date()
-};
+    const updateData: UpdateData = {
+      updatedAt: new Date()
+    };
 
     if (horarioSalida) updateData.horarioSalida = new Date(horarioSalida);
-    if (medicoNombre) updateData.medicoNombre = medicoNombre;
-    if (enfermeroNombre) updateData.enfermeroNombre = enfermeroNombre;
+    if (medicoNombre !== undefined) updateData.medicoNombre = medicoNombre || null;
+    if (medicoUsuarioId !== undefined) updateData.medicoUsuarioId = medicoUsuarioId || null;
+    if (enfermeroNombre !== undefined) updateData.enfermeroNombre = enfermeroNombre || null;
+    if (enfermeroUsuarioId !== undefined) updateData.enfermeroUsuarioId = enfermeroUsuarioId || null;
     if (pilotoNombre) updateData.pilotoNombre = pilotoNombre;
     if (matriculaAeronave) updateData.matriculaAeronave = matriculaAeronave;
 
