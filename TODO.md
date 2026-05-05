@@ -20,4 +20,5 @@
   - [x] Unificar estética de cards y fondo principal
   - [x] Agregar footer minimalista y consistente
   - [ ] Validar visualmente dashboard en desktop/mobile
+- [ ] Mejorar contraste global de dropdowns Select sobre overlays/modales
 - [ ] Resumir cambios y resultados finales
