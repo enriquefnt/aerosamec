@@ -1,6 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db'; // Ajusta la ruta si es diferente
 
+function parseDatetimeLocalArgentinaToUTC(fechaHora?: string): Date {
+  if (!fechaHora) return new Date();
+
+  // Esperado: YYYY-MM-DDTHH:mm (input datetime-local)
+  const match = fechaHora.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/);
+  if (!match) return new Date(fechaHora);
+
+  const [, y, m, d, hh, mm] = match;
+  // Argentina UTC-3 => sumar 3 horas para persistir UTC equivalente
+  return new Date(Date.UTC(Number(y), Number(m) - 1, Number(d), Number(hh) + 3, Number(mm), 0, 0));
+}
+
 // Función utilitaria para limpiar texto (trim y uppercase), con manejo de undefined
 function limpiarTexto(texto: string | undefined | null): string {
   if (typeof texto !== 'string' || texto === null || texto === undefined) {
@@ -18,6 +30,7 @@ export async function POST(request: NextRequest) {
       tipoRaw,
       descripcionRaw,
       observacionesRaw,
+      fechaHora,
       usuarioId  // ID del usuario actual
     } = body;
 
@@ -86,6 +99,7 @@ export async function POST(request: NextRequest) {
         tipo,
         descripcion,
         observaciones,
+        fechaHora: parseDatetimeLocalArgentinaToUTC(fechaHora),
         traslado: {
           connect: { id: trasladoId }  // Conectar al traslado
         },

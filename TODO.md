@@ -8,4 +8,16 @@
   - [x] Ajustar `forgot-password` solo si es necesario (mantener comportamiento)
 - [ ] Probar endpoints auth por curl (happy path + error path + edge cases)
 - [ ] Validar login en producción con env vars corregidas
+- [x] Agregar toggle mostrar/ocultar en nueva contraseña y confirmación (`src/app/reset-password/ResetPasswordClient.tsx`)
+- [ ] Corregir timezone en seguimiento (UTC en DB + render Argentina)
+  - [x] Analizar flujo de `fechaHora` en procedimientos/medicaciones/signos
+  - [x] Forzar render en `America/Argentina/Buenos_Aires` en `src/lib/timezone.ts`
+  - [x] Persistir `fechaHora` enviada por cliente en `src/app/api/procedimientos/route.ts`
+  - [x] Normalizar parseo de `fechaHora` (datetime-local) en procedimientos/medicaciones/signos
+  - [ ] Probar creación de procedimiento y validar visualización horaria
+- [ ] Mejorar UI dashboard (`src/app/dashboard/page.tsx`) estilo minimalista
+  - [x] Rediseñar header (tipografía, espaciado, colores, badge/logout)
+  - [x] Unificar estética de cards y fondo principal
+  - [x] Agregar footer minimalista y consistente
+  - [ ] Validar visualmente dashboard en desktop/mobile
 - [ ] Resumir cambios y resultados finales

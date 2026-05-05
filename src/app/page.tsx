@@ -51,7 +51,7 @@ export default function HomePage() {
                 <h1 className="text-xl font-bold text-gray-900">
                   Sistema de Traslados Médicos Aéreos
                 </h1>
-                <p className="text-sm text-gray-600">Provincia - Unidad de Transporte Aéreo</p>
+                <p className="text-sm text-gray-600">SAMEC - Unidad de Transporte Aéreo</p>
               </div>
             </div>
             <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
