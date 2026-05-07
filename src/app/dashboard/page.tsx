@@ -280,7 +280,7 @@ export default function DashboardPage() {
                         </svg>
                       </div>
                       <div className="text-left">
-                        <div className="font-medium">Seguimiento Médico</div>
+                        <div className="font-medium">Seguimiento</div>
                         <div className="text-sm text-gray-500">Control durante traslados</div>
                       </div>
                     </div>
@@ -335,7 +335,7 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between text-xs sm:text-sm text-slate-500">
             <p>© {new Date().getFullYear()} AeroSAMEC · Sistema de Traslados Médicos</p>
-            <p className="text-slate-400">Diseño minimal · Operación activa</p>
+            <p className="text-slate-400"> Operación activa</p>
           </div>
         </div>
       </footer>

@@ -22,3 +22,8 @@
   - [ ] Validar visualmente dashboard en desktop/mobile
 - [ ] Mejorar contraste global de dropdowns Select sobre overlays/modales
 - [ ] Resumir cambios y resultados finales
+- [ ] Corregir modales no responsive en seguimiento
+  - [x] Ajustar `DialogContent` base para mobile (`src/components/ui/dialog.tsx`)
+  - [x] Ajustar modal de medicación (inputs/select/footer responsive) en `src/app/dashboard/seguimiento/page.tsx`
+  - [x] Aplicar footer responsive en modales de procedimiento, signos y estado
+  - [ ] Verificar visualmente en mobile

@@ -10,8 +10,26 @@
 }
 
 @layer base {
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
   body {
     background-color: var(--background);
     color: var(--foreground);
+  }
+
+  /* Evita desborde horizontal global en controles dentro de modales */
+  input,
+  textarea,
+  select,
+  [data-slot="select-trigger"],
+  [data-slot="dialog-content"] {
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
   }
 }
