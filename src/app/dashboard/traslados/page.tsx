@@ -2,7 +2,7 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -179,20 +179,32 @@ export default function GestionTrasladosPage() {
     prioridad: 'NORMAL'
   });
 
-  // Redirigir si no es coordinador o admin
+  // Redirigir si no tiene rol autorizado
   useEffect(() => {
     if (status === 'loading') return;
-    if (!session?.user || (session.user.rol !== 'COORDINADOR' && session.user.rol !== 'ADMIN')) {
+    if (
+      !session?.user ||
+      (session.user.rol !== 'COORDINADOR' &&
+        session.user.rol !== 'ADMIN' &&
+        session.user.rol !== 'OPERARIO')
+    ) {
       router.push('/dashboard');
     }
   }, [session, status, router]);
 
-  // Cargar traslados y hospitales
+  // Cargar datos según rol
   useEffect(() => {
-    if (session?.user && (session.user.rol === 'COORDINADOR' || session.user.rol === 'ADMIN')) {
+    if (
+      session?.user &&
+      (session.user.rol === 'COORDINADOR' ||
+        session.user.rol === 'ADMIN' ||
+        session.user.rol === 'OPERARIO')
+    ) {
       cargarTraslados();
-      cargarHospitales();
-      cargarUsuarios();
+      if (session.user.rol !== 'OPERARIO') {
+        cargarHospitales();
+        cargarUsuarios();
+      }
     }
   }, [session]);
 
@@ -572,7 +584,12 @@ export default function GestionTrasladosPage() {
     );
   }
 
-  if (!session?.user || (session.user.rol !== 'COORDINADOR' && session.user.rol !== 'ADMIN')) {
+  if (
+    !session?.user ||
+    (session.user.rol !== 'COORDINADOR' &&
+      session.user.rol !== 'ADMIN' &&
+      session.user.rol !== 'OPERARIO')
+  ) {
     return null;
   }
 
@@ -756,35 +773,55 @@ export default function GestionTrasladosPage() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => abrirEditarTraslado(traslado)}
-                      className="text-blue-600 hover:text-blue-700"
+                      asChild
+                      className="text-slate-700 hover:text-slate-900"
                     >
-                      Editar
+                      <a
+                        href={`/api/traslados/${traslado.id}/reporte`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Ver reporte individual (imprimible / PDF)"
+                      >
+                        📄 Reporte
+                      </a>
                     </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => abrirCambiarEstado(traslado)}
-                      className="text-purple-600 hover:text-purple-700"
-                    >
-                      Cambiar Estado
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => abrirAsignarEquipo(traslado)}
-                      className="text-green-600 hover:text-green-700"
-                    >
-                      Asignar Equipo
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => abrirEliminarTraslado(traslado)}
-                      className="text-red-600 hover:text-red-700"
-                    >
-                      Eliminar
-                    </Button>
+
+                    {session.user.rol !== 'OPERARIO' && (
+                      <>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => abrirEditarTraslado(traslado)}
+                          className="text-blue-600 hover:text-blue-700"
+                        >
+                          Editar
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => abrirCambiarEstado(traslado)}
+                          className="text-purple-600 hover:text-purple-700"
+                        >
+                          Cambiar Estado
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => abrirAsignarEquipo(traslado)}
+                          className="text-green-600 hover:text-green-700"
+                        >
+                          Asignar Equipo
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => abrirEliminarTraslado(traslado)}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          Eliminar
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </CardContent>
               </Card>

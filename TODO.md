@@ -1,29 +1,18 @@
-- [x] Revisar `package-lock.json` por JSON inválido (comas colgantes, comentarios, llaves incompletas)
-- [x] Buscar caracteres no válidos en `package.json` y `package-lock.json`
-- [x] Regenerar `package-lock.json` si está corrupto
-- [x] Validar ambos JSON
-- [ ] Corregir robustez SMTP en `src/lib/emailer.ts` y `src/app/api/auth/forgot-password/route.ts`
-  - [x] Analizar error Vercel `EAUTH 535` y flujo `forgot-password`
-  - [x] Endurecer `src/lib/emailer.ts` (validación config, `SMTP_FROM`, `requireTLS`, `verify`, errores claros)
-  - [x] Ajustar `forgot-password` solo si es necesario (mantener comportamiento)
-- [ ] Probar endpoints auth por curl (happy path + error path + edge cases)
-- [ ] Validar login en producción con env vars corregidas
-- [x] Agregar toggle mostrar/ocultar en nueva contraseña y confirmación (`src/app/reset-password/ResetPasswordClient.tsx`)
-- [ ] Corregir timezone en seguimiento (UTC en DB + render Argentina)
-  - [x] Analizar flujo de `fechaHora` en procedimientos/medicaciones/signos
-  - [x] Forzar render en `America/Argentina/Buenos_Aires` en `src/lib/timezone.ts`
-  - [x] Persistir `fechaHora` enviada por cliente en `src/app/api/procedimientos/route.ts`
-  - [x] Normalizar parseo de `fechaHora` (datetime-local) en procedimientos/medicaciones/signos
-  - [ ] Probar creación de procedimiento y validar visualización horaria
-- [ ] Mejorar UI dashboard (`src/app/dashboard/page.tsx`) estilo minimalista
-  - [x] Rediseñar header (tipografía, espaciado, colores, badge/logout)
-  - [x] Unificar estética de cards y fondo principal
-  - [x] Agregar footer minimalista y consistente
-  - [ ] Validar visualmente dashboard en desktop/mobile
-- [ ] Mejorar contraste global de dropdowns Select sobre overlays/modales
-- [ ] Resumir cambios y resultados finales
-- [ ] Corregir modales no responsive en seguimiento
-  - [x] Ajustar `DialogContent` base para mobile (`src/components/ui/dialog.tsx`)
-  - [x] Ajustar modal de medicación (inputs/select/footer responsive) en `src/app/dashboard/seguimiento/page.tsx`
-  - [x] Aplicar footer responsive en modales de procedimiento, signos y estado
-  - [ ] Verificar visualmente en mobile
+# TODO - Reporte individual de traslados (vista imprimible legal + PDF nativo)
+
+- [x] Ajustar permisos/filtrado en API de traslados por rol:
+  - [x] COORDINADOR/ADMIN ven todos
+  - [x] OPERARIO ve solo traslados asignados (`usuarioAsignadoId`)
+- [x] Crear endpoint de reporte individual:
+  - [x] `GET /api/traslados/[id]/reporte`
+  - [x] HTML con estilos de impresión legal (`@page size: legal`)
+  - [x] Botón para imprimir/guardar PDF desde navegador
+- [x] Actualizar listado de traslados en frontend:
+  - [x] Agregar icono/botón para abrir reporte individual en nueva pestaña
+  - [x] Habilitar acceso de OPERARIO en la página de traslados
+- [ ] Verificación final de consistencia
+
+## Ajuste visual del informe (compacto tipo formulario papel)
+- [ ] Rediseñar layout a 3 columnas y estilo más compacto
+- [ ] Unificar registros clínicos en una sola tabla cronológica
+- [ ] Mantener epicrisis integrada al final del informe
