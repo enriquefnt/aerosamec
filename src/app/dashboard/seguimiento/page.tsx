@@ -818,16 +818,17 @@ const registrarProcedimiento = async (e: React.FormEvent) => {
                 />
               </div>
 
-              <div className="flex justify-end space-x-2">
+              <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
                 <Button 
                   type="button" 
                   variant="outline" 
                   onClick={() => setShowProcedimientoDialog(false)}
                   disabled={savingProcedimiento}
+                  className="w-full sm:w-auto"
                 >
                   Cancelar
                 </Button>
-                <Button type="submit" disabled={savingProcedimiento}>
+                <Button type="submit" disabled={savingProcedimiento} className="w-full sm:w-auto">
                   {savingProcedimiento ? 'Registrando...' : 'Registrar Procedimiento'}
                 </Button>
               </div>
@@ -845,7 +846,7 @@ const registrarProcedimiento = async (e: React.FormEvent) => {
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={registrarMedicacion} className="space-y-4">
-              <div>
+              <div className="min-w-0">
                 <Label htmlFor="med-fechaHora">Fecha y Hora</Label>
                 <Input
                   id="med-fechaHora"
@@ -853,13 +854,14 @@ const registrarProcedimiento = async (e: React.FormEvent) => {
                   value={medicacionForm.fechaHora}
                   onChange={(e) => setMedicacionForm({...medicacionForm, fechaHora: e.target.value})}
                   required
+                  className="w-full min-w-0 max-w-full"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 mt-1 break-words">
                   Se pre-carga la hora actual, pero puede modificarla si es necesario
                 </p>
               </div>
 
-              <div>
+              <div className="min-w-0">
                 <Label htmlFor="med-medicamento">Medicamento *</Label>
                 <Input
                   id="med-medicamento"
@@ -867,24 +869,26 @@ const registrarProcedimiento = async (e: React.FormEvent) => {
                   onChange={(e) => setMedicacionForm({...medicacionForm, medicamento: e.target.value})}
                   placeholder="Ej: Furosemida, Morfina, Adrenalina..."
                   required
+                  className="w-full min-w-0 max-w-full"
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
+                <div className="min-w-0">
                   <Label htmlFor="med-dosis">Dosis *</Label>
                   <Input
                     id="med-dosis"
                     value={medicacionForm.dosis}
                     onChange={(e) => setMedicacionForm({...medicacionForm, dosis: e.target.value})}
-                    placeholder="Ej: 1 mg/kg, 5 ml, 0.5 mg..."
+                    placeholder="Ej: 1 mg/kg, 5 ml..."
                     required
+                    className="w-full"
                   />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <Label htmlFor="med-via">Vía de Administración *</Label>
                   <Select value={medicacionForm.via} onValueChange={(value) => setMedicacionForm({...medicacionForm, via: value})}>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Seleccionar vía" />
                     </SelectTrigger>
                     <SelectContent>
@@ -900,7 +904,7 @@ const registrarProcedimiento = async (e: React.FormEvent) => {
                 </div>
               </div>
 
-              <div>
+              <div className="min-w-0">
                 <Label htmlFor="med-observaciones">Observaciones</Label>
                 <Textarea
                   id="med-observaciones"
@@ -908,19 +912,21 @@ const registrarProcedimiento = async (e: React.FormEvent) => {
                   onChange={(e) => setMedicacionForm({...medicacionForm, observaciones: e.target.value})}
                   placeholder="Indicación, efectos observados, reacciones..."
                   rows={2}
+                  className="w-full min-w-0 max-w-full"
                 />
               </div>
 
-              <div className="flex justify-end space-x-2">
+              <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
                 <Button 
                   type="button" 
                   variant="outline" 
                   onClick={() => setShowMedicacionDialog(false)}
                   disabled={savingMedicacion}
+                  className="w-full sm:w-auto"
                 >
                   Cancelar
                 </Button>
-                <Button type="submit" disabled={savingMedicacion}>
+                <Button type="submit" disabled={savingMedicacion} className="w-full sm:w-auto">
                   {savingMedicacion ? 'Registrando...' : 'Registrar Medicación'}
                 </Button>
               </div>
@@ -1073,16 +1079,17 @@ const registrarProcedimiento = async (e: React.FormEvent) => {
                 />
               </div>
 
-              <div className="flex justify-end space-x-2">
+              <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
                 <Button 
                   type="button" 
                   variant="outline" 
                   onClick={() => setShowSignosDialog(false)}
                   disabled={savingSignos}
+                  className="w-full sm:w-auto"
                 >
                   Cancelar
                 </Button>
-                <Button type="submit" disabled={savingSignos}>
+                <Button type="submit" disabled={savingSignos} className="w-full sm:w-auto">
                   {savingSignos ? 'Registrando...' : 'Registrar Signos Vitales'}
                 </Button>
               </div>
@@ -1133,17 +1140,19 @@ const registrarProcedimiento = async (e: React.FormEvent) => {
                   </Select>
                 </div>
 
-                <div className="flex justify-end space-x-2">
+                <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
                   <Button 
                     variant="outline" 
                     onClick={() => setShowEstadoDialog(false)}
                     disabled={updatingEstado}
+                    className="w-full sm:w-auto"
                   >
                     Cancelar
                   </Button>
                   <Button 
                     onClick={cambiarEstado}
                     disabled={updatingEstado}
+                    className="w-full sm:w-auto"
                   >
                     {updatingEstado ? 'Actualizando...' : 'Actualizar Estado'}
                   </Button>

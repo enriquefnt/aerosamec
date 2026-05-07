@@ -51,7 +51,7 @@ export default function HomePage() {
                 <h1 className="text-xl font-bold text-gray-900">
                   Sistema de Traslados Médicos Aéreos
                 </h1>
-                <p className="text-sm text-gray-600">Provincia - Unidad de Transporte Aéreo</p>
+                <p className="text-sm text-gray-600">SAMEC - Unidad de Transporte Aéreo</p>
               </div>
             </div>
             <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
@@ -136,12 +136,17 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center text-sm text-gray-600">
             <div>
-              © 2024 Sistema Provincial de Salud - Unidad de Transporte Aéreo
+              © 2026 SAMEC - Unidad de Transporte Aéreo
             </div>
             <div className="flex space-x-4">
               <span>Versión 1.0.0</span>
               <span>•</span>
-              <span>Soporte Técnico</span>
+              <a
+                href="mailto:enrique@saltaped.com"
+                className="hover:text-blue-600 hover:underline"
+              >
+                Soporte Técnico
+              </a>
             </div>
           </div>
         </div>

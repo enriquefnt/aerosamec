@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth-options';
 import { prisma } from '@/lib/db';
 import { capitalizarNombre, formatearDNI, limpiarTexto, formatearInstitucion, formatearTelefono } from '@/lib/formatters';
 
@@ -30,7 +32,22 @@ function generarNumeroTraslado(): string {
 // GET - Listar traslados
 export async function GET() {
   try {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user?.id || !session.user.rol) {
+      return NextResponse.json(
+        { error: 'No autorizado' },
+        { status: 401 }
+      );
+    }
+
+    const whereClause =
+      session.user.rol === 'OPERARIO'
+        ? { usuarioAsignadoId: session.user.id }
+        : {};
+
     const traslados = await prisma.traslado.findMany({
+      where: whereClause,
       include: {
         hospitalOrigen: {
           select: { nombre: true }

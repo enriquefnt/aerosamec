@@ -1,4 +1,4 @@
-// Configuración de zona horaria automática del dispositivo
+const APP_TIMEZONE = 'America/Argentina/Buenos_Aires';
 
 // Función para obtener fecha/hora actual del dispositivo en formato datetime-local
 export function formatearDateTimeLocal(fecha?: Date): string {
@@ -15,12 +15,12 @@ export function formatearDateTimeLocal(fecha?: Date): string {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
-// Función para mostrar fecha/hora usando zona horaria local del dispositivo
+// Función para mostrar fecha/hora en zona horaria de Argentina
 export function formatearFechaHoraLocal(fecha: Date | string): string {
   const fechaObj = typeof fecha === 'string' ? new Date(fecha) : fecha;
   
-  // Usar toLocaleString sin especificar zona horaria para usar la del dispositivo
-  return fechaObj.toLocaleString(undefined, {
+  return fechaObj.toLocaleString('es-AR', {
+    timeZone: APP_TIMEZONE,
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
@@ -30,11 +30,12 @@ export function formatearFechaHoraLocal(fecha: Date | string): string {
   });
 }
 
-// Función para obtener solo la fecha usando zona horaria local del dispositivo
+// Función para obtener solo la fecha en zona horaria de Argentina
 export function formatearFechaLocal(fecha: Date | string): string {
   const fechaObj = typeof fecha === 'string' ? new Date(fecha) : fecha;
   
-  return fechaObj.toLocaleDateString(undefined, {
+  return fechaObj.toLocaleDateString('es-AR', {
+    timeZone: APP_TIMEZONE,
     year: 'numeric',
     month: '2-digit',
     day: '2-digit'
