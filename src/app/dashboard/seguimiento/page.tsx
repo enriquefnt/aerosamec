@@ -16,6 +16,19 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { obtenerHoraActualDispositivo, formatearFechaHoraLocal } from '@/lib/timezone';
 
 
+interface SeguimientoRegistro {
+  id: string;
+  tipo: string;
+  descripcion: string;
+  observaciones?: string;
+  diagnosticosIniciales?: string;
+  viaAerea?: string;
+  respiracion?: string;
+  hemodinamia?: string;
+  neurologico?: string;
+  fechaHora: string;
+}
+
 interface Traslado {
   id: string;
   numeroTraslado: string;
@@ -35,6 +48,7 @@ interface Traslado {
   medicaciones: Array<{ id: string; fechaHora: string; medicamento: string; dosis: string; via: string; observaciones?: string }>;
   controlesSignos: Array<{ id: string; fechaHora: string; frecuenciaCardiaca?: string; frecuenciaRespiratoria?: string; presionArterialSist?: string; presionArterialDiast?: string; temperatura?: string; saturacionO2?: string; escalaGlasgow?: string; observaciones?: string }>;
   epicrisis?: string;
+  seguimientos: SeguimientoRegistro[];
 }
 
 export default function SeguimientoMedicoPage() {
@@ -51,6 +65,7 @@ export default function SeguimientoMedicoPage() {
   const [showMedicacionDialog, setShowMedicacionDialog] = useState(false);
   const [showSignosDialog, setShowSignosDialog] = useState(false);
   const [showEstadoDialog, setShowEstadoDialog] = useState(false);
+  const [showValoracionDialog, setShowValoracionDialog] = useState(false);
 
   // Estados de carga
   const [savingProcedimiento, setSavingProcedimiento] = useState(false);
@@ -58,6 +73,7 @@ export default function SeguimientoMedicoPage() {
   const [savingSignos, setSavingSignos] = useState(false);
   const [updatingEstado, setUpdatingEstado] = useState(false);
   const [savingEpicrisis, setSavingEpicrisis] = useState(false);
+  const [savingValoracion, setSavingValoracion] = useState(false);
 
   // Form states
   const [procedimientoForm, setProcedimientoForm] = useState({
@@ -89,6 +105,14 @@ export default function SeguimientoMedicoPage() {
 
   const [nuevoEstado, setNuevoEstado] = useState('');
   const [epicrisis, setEpicrisis] = useState('');
+  const [valoracionForm, setValoracionForm] = useState({
+    diagnosticosIniciales: '',
+    viaAerea: '',
+    respiracion: '',
+    hemodinamia: '',
+    neurologico: '',
+    fechaHora: ''
+  });
 
   // Función para obtener fecha/hora actual del dispositivo
   const obtenerFechaHoraActual = () => {
@@ -120,6 +144,14 @@ export default function SeguimientoMedicoPage() {
       saturacionO2: '',
       escalaGlasgow: '',
       observaciones: '',
+      fechaHora: horaActual
+    });
+    setValoracionForm({
+      diagnosticosIniciales: '',
+      viaAerea: '',
+      respiracion: '',
+      hemodinamia: '',
+      neurologico: '',
       fechaHora: horaActual
     });
   }, []);
@@ -353,6 +385,54 @@ const registrarProcedimiento = async (e: React.FormEvent) => {
     }
   };
 
+  const registrarValoracionInicial = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!trasladoSeleccionado) return;
+
+    if (
+      !valoracionForm.diagnosticosIniciales.trim() ||
+      !valoracionForm.viaAerea ||
+      !valoracionForm.respiracion ||
+      !valoracionForm.hemodinamia ||
+      !valoracionForm.neurologico
+    ) {
+      setError('Diagnósticos y todos los campos de valoración inicial son obligatorios.');
+      return;
+    }
+
+    setSavingValoracion(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/seguimientos/valoracion-inicial', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          trasladoId: trasladoSeleccionado.id,
+          usuarioId: session?.user?.id,
+          ...valoracionForm
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccess('Valoración inicial registrada exitosamente');
+        setShowValoracionDialog(false);
+        inicializarFormularios();
+        setTimeout(async () => {
+          await cargarTraslados();
+        }, 500);
+      } else {
+        setError(data.error || 'Error registrando valoración inicial');
+      }
+    } catch {
+      setError('Error de conexión');
+    } finally {
+      setSavingValoracion(false);
+    }
+  };
+
   // Función para cambiar estado
   const cambiarEstado = async () => {
     if (!trasladoSeleccionado) return;
@@ -568,7 +648,7 @@ const registrarProcedimiento = async (e: React.FormEvent) => {
                 </Card>
 
                 {/* Botones de acción */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                   <Button
                     onClick={() => {
                       inicializarFormularios();
@@ -595,6 +675,15 @@ const registrarProcedimiento = async (e: React.FormEvent) => {
                     className="bg-purple-600 hover:bg-purple-700"
                   >
                     Control Signos Vitales
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      inicializarFormularios();
+                      setShowValoracionDialog(true);
+                    }}
+                    className="bg-cyan-600 hover:bg-cyan-700"
+                  >
+                    Valoración Inicial
                   </Button>
                   <Button
                     onClick={() => setShowEstadoDialog(true)}
@@ -648,7 +737,14 @@ const registrarProcedimiento = async (e: React.FormEvent) => {
                                 ...c,
                                 tipoRegistro: 'signos',
                                 timestamp: new Date(c.fechaHora).getTime()
-                              }))
+                              })),
+                              ...trasladoSeleccionado.seguimientos
+                                .filter((s) => s.tipo === 'VALORACION_INICIAL')
+                                .map((s) => ({
+                                  ...s,
+                                  tipoRegistro: 'valoracion',
+                                  timestamp: new Date(s.fechaHora).getTime()
+                                }))
                             ].sort((a, b) => b.timestamp - a.timestamp);
 
                             if (registros.length === 0) {
@@ -670,10 +766,12 @@ const registrarProcedimiento = async (e: React.FormEvent) => {
                                   <Badge className={
                                     registro.tipoRegistro === 'procedimiento' ? 'bg-blue-100 text-blue-800' :
                                     registro.tipoRegistro === 'medicacion' ? 'bg-green-100 text-green-800' :
+                                    registro.tipoRegistro === 'valoracion' ? 'bg-cyan-100 text-cyan-800' :
                                     'bg-purple-100 text-purple-800'
                                   }>
                                     {registro.tipoRegistro === 'procedimiento' ? 'Procedimiento' :
-                                     registro.tipoRegistro === 'medicacion' ? 'Medicación' : 'Signos Vitales'}
+                                     registro.tipoRegistro === 'medicacion' ? 'Medicación' :
+                                     registro.tipoRegistro === 'valoracion' ? 'Valoración Inicial' : 'Signos Vitales'}
                                   </Badge>
                                 </TableCell>
                                 <TableCell>
@@ -691,6 +789,19 @@ const registrarProcedimiento = async (e: React.FormEvent) => {
                                   )}
                                   {registro.tipoRegistro === 'signos' && (
                                     <div className="text-sm text-gray-600">Control de signos vitales</div>
+                                  )}
+                                  {registro.tipoRegistro === 'valoracion' && (
+                                    <div>
+                                      <div className="font-medium">
+                                        {('diagnosticosIniciales' in registro && registro.diagnosticosIniciales) ? registro.diagnosticosIniciales : '-'}
+                                      </div>
+                                      <div className="text-sm text-gray-600">
+                                        VA: {('viaAerea' in registro && registro.viaAerea) ? registro.viaAerea : '-'} | 
+                                        Resp: {('respiracion' in registro && registro.respiracion) ? registro.respiracion : '-'} | 
+                                        Hemo: {('hemodinamia' in registro && registro.hemodinamia) ? registro.hemodinamia : '-'} | 
+                                        Neuro: {('neurologico' in registro && registro.neurologico) ? registro.neurologico : '-'}
+                                      </div>
+                                    </div>
                                   )}
                                 </TableCell>
                                 <TableCell>{registro.tipoRegistro === 'signos' ? ('frecuenciaCardiaca' in registro ? (registro.frecuenciaCardiaca || '-') : '-') : '-'}</TableCell>
@@ -1091,6 +1202,110 @@ const registrarProcedimiento = async (e: React.FormEvent) => {
                 </Button>
                 <Button type="submit" disabled={savingSignos} className="w-full sm:w-auto">
                   {savingSignos ? 'Registrando...' : 'Registrar Signos Vitales'}
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Dialog para valoración inicial */}
+        <Dialog open={showValoracionDialog} onOpenChange={setShowValoracionDialog}>
+          <DialogContent className="sm:max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Valoración Inicial del Paciente</DialogTitle>
+              <DialogDescription>
+                Registre diagnósticos y estado clínico inicial durante el traslado
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={registrarValoracionInicial} className="space-y-4">
+              <div>
+                <Label htmlFor="val-fechaHora">Fecha y Hora</Label>
+                <Input
+                  id="val-fechaHora"
+                  type="datetime-local"
+                  value={valoracionForm.fechaHora}
+                  onChange={(e) => setValoracionForm({ ...valoracionForm, fechaHora: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="val-diagnosticos">Diagnósticos *</Label>
+                <Textarea
+                  id="val-diagnosticos"
+                  value={valoracionForm.diagnosticosIniciales}
+                  onChange={(e) => setValoracionForm({ ...valoracionForm, diagnosticosIniciales: e.target.value })}
+                  placeholder="Texto libre de diagnósticos iniciales"
+                  rows={3}
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label>Vía Aérea *</Label>
+                  <Select value={valoracionForm.viaAerea} onValueChange={(value) => setValoracionForm({ ...valoracionForm, viaAerea: value })}>
+                    <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Permeable">Permeable</SelectItem>
+                      <SelectItem value="Obstruida">Obstruida</SelectItem>
+                      <SelectItem value="Asegurada (TET)">Asegurada (TET)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label>Respiración *</Label>
+                  <Select value={valoracionForm.respiracion} onValueChange={(value) => setValoracionForm({ ...valoracionForm, respiracion: value })}>
+                    <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Normal">Normal</SelectItem>
+                      <SelectItem value="Dificultad">Dificultad</SelectItem>
+                      <SelectItem value="Asistida">Asistida</SelectItem>
+                      <SelectItem value="Apnea">Apnea</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label>Hemodinamia *</Label>
+                  <Select value={valoracionForm.hemodinamia} onValueChange={(value) => setValoracionForm({ ...valoracionForm, hemodinamia: value })}>
+                    <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Estable">Estable</SelectItem>
+                      <SelectItem value="Inestable">Inestable</SelectItem>
+                      <SelectItem value="Shock">Shock</SelectItem>
+                      <SelectItem value="PCR">PCR</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label>Neurológico *</Label>
+                  <Select value={valoracionForm.neurologico} onValueChange={(value) => setValoracionForm({ ...valoracionForm, neurologico: value })}>
+                    <SelectTrigger><SelectValue placeholder="Seleccionar" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Alerta">Alerta</SelectItem>
+                      <SelectItem value="Verbal">Verbal</SelectItem>
+                      <SelectItem value="Dolor">Dolor</SelectItem>
+                      <SelectItem value="No responde">No responde</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowValoracionDialog(false)}
+                  disabled={savingValoracion}
+                  className="w-full sm:w-auto"
+                >
+                  Cancelar
+                </Button>
+                <Button type="submit" disabled={savingValoracion} className="w-full sm:w-auto">
+                  {savingValoracion ? 'Registrando...' : 'Registrar Valoración Inicial'}
                 </Button>
               </div>
             </form>

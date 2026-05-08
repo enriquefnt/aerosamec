@@ -165,16 +165,21 @@ model Medicacion {
 }
 
 model Seguimiento {
-  id            String   @id @default(cuid())
-  trasladoId    String
-  usuarioId     String
-  tipo          String
-  descripcion   String
-  observaciones String?
-  fechaHora     DateTime @default(now())
-  createdAt     DateTime @default(now())
-  traslado      Traslado @relation(fields: [trasladoId], references: [id], onDelete: Cascade)
-  usuario       Usuario  @relation(fields: [usuarioId], references: [id])
+  id                   String   @id @default(cuid())
+  trasladoId           String
+  usuarioId            String
+  tipo                 String
+  descripcion          String
+  observaciones        String?
+  diagnosticosIniciales String?
+  viaAerea             String?
+  respiracion          String?
+  hemodinamia          String?
+  neurologico          String?
+  fechaHora            DateTime @default(now())
+  createdAt            DateTime @default(now())
+  traslado             Traslado @relation(fields: [trasladoId], references: [id], onDelete: Cascade)
+  usuario              Usuario  @relation(fields: [usuarioId], references: [id])
 
   @@index([trasladoId])
   @@index([tipo])

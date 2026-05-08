@@ -1,18 +1,20 @@
-# TODO - Reporte individual de traslados (vista imprimible legal + PDF nativo)
+# TODO - Seguimiento de traslados
 
-- [x] Ajustar permisos/filtrado en API de traslados por rol:
-  - [x] COORDINADOR/ADMIN ven todos
-  - [x] OPERARIO ve solo traslados asignados (`usuarioAsignadoId`)
-- [x] Crear endpoint de reporte individual:
-  - [x] `GET /api/traslados/[id]/reporte`
-  - [x] HTML con estilos de impresión legal (`@page size: legal`)
-  - [x] Botón para imprimir/guardar PDF desde navegador
-- [x] Actualizar listado de traslados en frontend:
-  - [x] Agregar icono/botón para abrir reporte individual en nueva pestaña
-  - [x] Habilitar acceso de OPERARIO en la página de traslados
-- [ ] Verificación final de consistencia
-
-## Ajuste visual del informe (compacto tipo formulario papel)
-- [ ] Rediseñar layout a 3 columnas y estilo más compacto
-- [ ] Unificar registros clínicos en una sola tabla cronológica
-- [ ] Mantener epicrisis integrada al final del informe
+- [x] Revisar modelo Prisma y flujo actual de seguimiento/traslados (DB + API + formulario).
+- [ ] Agregar en DB el campo de texto libre obligatorio `diagnosticosIniciales` en seguimiento.
+- [ ] Agregar en DB los campos de valoración inicial:
+  - [ ] viaAerea
+  - [ ] respiracion
+  - [ ] hemodinamia
+  - [ ] neurologico
+- [ ] Crear endpoint nuevo `POST /api/seguimientos/valoracion-inicial`.
+- [ ] Actualizar endpoint de operario para incluir `seguimientos`.
+- [ ] Actualizar formulario de seguimiento:
+  - [ ] Campo texto libre obligatorio "Diagnósticos"
+  - [ ] Select obligatorio "Vía Aérea"
+  - [ ] Select obligatorio "Respiración"
+  - [ ] Select obligatorio "Hemodinamia"
+  - [ ] Select obligatorio "Neurológico"
+- [ ] Mostrar en grilla una fila "Valoración inicial" con resumen de 5 campos.
+- [ ] Validar obligatoriedad en frontend y backend.
+- [ ] Probar flujo crítico (guardar/consultar valoración inicial).

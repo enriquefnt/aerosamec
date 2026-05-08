@@ -80,6 +80,24 @@ export async function GET(request: Request) {
             }
           },
           orderBy: { fechaHora: 'desc' }
+        },
+        seguimientos: {
+          select: {
+            id: true,
+            tipo: true,
+            descripcion: true,
+            observaciones: true,
+            diagnosticosIniciales: true,
+            viaAerea: true,
+            respiracion: true,
+            hemodinamia: true,
+            neurologico: true,
+            fechaHora: true,
+            usuario: {
+              select: { nombre: true, apellido: true }
+            }
+          },
+          orderBy: { fechaHora: 'desc' }
         }
       },
       orderBy: {
