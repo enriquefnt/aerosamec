@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { formatearFechaLocal } from '@/lib/timezone';
+import { capitalizarNombre, formatearDNIMostrar, formatearEmail, formatearTelefono } from '@/lib/formatters';
 
 interface Usuario {
   id: string;
@@ -119,12 +120,20 @@ const [reenviandoId, setReenviandoId] = useState<string | null>(null);
     setSuccess('');
 
     try {
+      const payload = {
+        ...formData,
+        email: formatearEmail(formData.email),
+        nombre: capitalizarNombre(formData.nombre),
+        apellido: capitalizarNombre(formData.apellido),
+        telefono: formData.telefono ? formatearTelefono(formData.telefono) : '',
+      };
+
       const response = await fetch('/api/usuarios', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -201,15 +210,20 @@ const [reenviandoId, setReenviandoId] = useState<string | null>(null);
     setSuccess('');
 
     try {
+      const payload = {
+        id: editingUser.id,
+        ...editFormData,
+        nombre: capitalizarNombre(editFormData.nombre),
+        apellido: capitalizarNombre(editFormData.apellido),
+        telefono: editFormData.telefono ? formatearTelefono(editFormData.telefono) : '',
+      };
+
       const response = await fetch('/api/usuarios/editar', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          id: editingUser.id,
-          ...editFormData
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -589,7 +603,7 @@ const [reenviandoId, setReenviandoId] = useState<string | null>(null);
                             <div className="text-sm text-gray-500">{usuario.email}</div>
                           </div>
                         </TableCell>
-                        <TableCell className="font-mono text-sm">{usuario.dni}</TableCell>
+                        <TableCell className="font-mono text-sm">{formatearDNIMostrar(usuario.dni)}</TableCell>
                         <TableCell>
                           <div className="space-y-1">
                             <Badge className={`text-xs ${getRoleBadgeColor(usuario.rol)}`}>
@@ -670,7 +684,7 @@ const [reenviandoId, setReenviandoId] = useState<string | null>(null);
                         {usuario.nombre} {usuario.apellido}
                       </h4>
                       <p className="text-sm text-gray-600">{usuario.email}</p>
-                      <p className="text-sm text-gray-500 font-mono">DNI: {usuario.dni}</p>
+                      <p className="text-sm text-gray-500 font-mono">DNI: {formatearDNIMostrar(usuario.dni)}</p>
                     </div>
                     <Badge className={usuario.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
                       {usuario.activo ? 'Activo' : 'Inactivo'}
@@ -887,7 +901,7 @@ const [reenviandoId, setReenviandoId] = useState<string | null>(null);
                       {userToDelete.nombre} {userToDelete.apellido}
                     </div>
                     <div className="text-red-700">{userToDelete.email}</div>
-                    <div className="text-red-600">DNI: {userToDelete.dni}</div>
+                    <div className="text-red-600">DNI: {formatearDNIMostrar(userToDelete.dni)}</div>
                     <div className="text-red-600">Rol: {userToDelete.rol}</div>
                   </div>
                 </div>

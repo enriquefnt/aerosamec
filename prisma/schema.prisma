@@ -32,12 +32,13 @@ model Usuario {
   resetPasswordToken   String? @db.VarChar(255)
   resetPasswordExpires DateTime? @map("resetTokenExpires")
 
-  controlesSignos    ControlSignosVitales[]
-  medicaciones       Medicacion[]
-  procedimientos     Procedimiento[]
-  seguimientos       Seguimiento[]
-  trasladosAsignados Traslado[]             @relation("UsuarioAsignado")
-  trasladosCreados   Traslado[]             @relation("UsuarioCreador")
+  controlesSignos       ControlSignosVitales[]
+  medicaciones          Medicacion[]
+  procedimientos        Procedimiento[]
+  seguimientos          Seguimiento[]
+  evaluacionesIniciales EvaluacionInicial[]
+  trasladosAsignados    Traslado[]             @relation("UsuarioAsignado")
+  trasladosCreados      Traslado[]             @relation("UsuarioCreador")
 
   @@index([email])
   @@index([dni])
@@ -112,6 +113,7 @@ model Traslado {
   medicaciones           Medicacion[]
   procedimientos         Procedimiento[]
   seguimientos           Seguimiento[]
+  evaluacionesIniciales  EvaluacionInicial[]
   hospitalDestino        Hospital               @relation("HospitalDestino", fields: [hospitalDestinoId], references: [id])
   hospitalOrigen         Hospital               @relation("HospitalOrigen", fields: [hospitalOrigenId], references: [id])
   usuarioAsignado        Usuario?               @relation("UsuarioAsignado", fields: [usuarioAsignadoId], references: [id])
@@ -180,6 +182,25 @@ model Seguimiento {
   @@index([tipo])
   @@index([usuarioId], map: "seguimientos_usuarioId_fkey")
   @@map("seguimientos")
+}
+
+model EvaluacionInicial {
+  id           String   @id @default(cuid())
+  trasladoId   String
+  usuarioId    String
+  fechaHora    DateTime @default(now())
+  diagnostico  String
+  viaAerea     String
+  respiracion  String
+  hemodinamia  String
+  neurologico  String
+  createdAt    DateTime @default(now())
+  traslado     Traslado @relation(fields: [trasladoId], references: [id], onDelete: Cascade)
+  usuario      Usuario  @relation(fields: [usuarioId], references: [id])
+
+  @@index([trasladoId])
+  @@index([usuarioId], map: "evaluaciones_iniciales_usuarioId_fkey")
+  @@map("evaluaciones_iniciales")
 }
 
 model ControlSignosVitales {

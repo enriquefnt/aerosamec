@@ -1,18 +1,26 @@
-# TODO - Reporte individual de traslados (vista imprimible legal + PDF nativo)
+- [x] Investigar por qué el DNI se muestra sin puntos en gestión de usuarios
+- [x] Definir plan de corrección (formateo solo de visualización)
+- [x] Agregar función de formateo visual DNI en `src/lib/formatters.ts`
+- [x] Aplicar formateo en `src/app/dashboard/usuarios/page.tsx` (tabla, cards y diálogo)
+- [x] Probar rápidamente que el formato se vea correcto y no rompa creación/edición
+- [x] Actualizar TODO con tareas completadas
 
-- [x] Ajustar permisos/filtrado en API de traslados por rol:
-  - [x] COORDINADOR/ADMIN ven todos
-  - [x] OPERARIO ve solo traslados asignados (`usuarioAsignadoId`)
-- [x] Crear endpoint de reporte individual:
-  - [x] `GET /api/traslados/[id]/reporte`
-  - [x] HTML con estilos de impresión legal (`@page size: legal`)
-  - [x] Botón para imprimir/guardar PDF desde navegador
-- [x] Actualizar listado de traslados en frontend:
-  - [x] Agregar icono/botón para abrir reporte individual en nueva pestaña
-  - [x] Habilitar acceso de OPERARIO en la página de traslados
-- [ ] Verificación final de consistencia
+- [x] Definir plan para normalizar texto en carga/edición (trim + espacios + capitalización)
+- [ ] Revisar y actualizar utilidades en `src/lib/formatters.ts` para nombres/localidades/direcciones
+- [ ] Aplicar normalización en envío de formularios de `src/app/dashboard/usuarios/page.tsx`
+- [ ] Revisar formularios de `src/app/dashboard/traslados/page.tsx` y aplicar normalización en campos de texto
+- [ ] Ejecutar pruebas funcionales de creación/edición en usuarios y traslados
+- [ ] Actualizar TODO final de esta tarea
 
-## Ajuste visual del informe (compacto tipo formulario papel)
-- [ ] Rediseñar layout a 3 columnas y estilo más compacto
-- [ ] Unificar registros clínicos en una sola tabla cronológica
-- [ ] Mantener epicrisis integrada al final del informe
+- [x] Definir estado local para "Evaluación inicial" en `src/app/dashboard/seguimiento/page.tsx`
+- [x] Agregar botón "Evaluación inicial" en acciones de seguimiento
+- [x] Implementar Dialog con diagnóstico + 4 selects (Vía Aérea, Respiración, Hemodinamia, Neurológico)
+- [x] Conectar acciones de abrir/cerrar/guardar local del formulario
+- [ ] Marcar tareas completadas en TODO
+- [ ] Ajustar modal de "Evaluación inicial" para mobile (sin desborde horizontal)
+- [ ] Reordenar acciones para que "Evaluación inicial" sea el primer botón
+- [ ] Agregar modelo `EvaluacionInicial` en Prisma y relaciones en `Usuario`/`Traslado`
+- [ ] Crear endpoint `POST /api/evaluaciones-iniciales`
+- [ ] Incluir `evaluacionesIniciales` en `GET /api/traslados/operario`
+- [ ] Conectar modal de Evaluación inicial al POST real
+- [ ] Ejecutar/indicar migración Prisma para aplicar cambios de DB

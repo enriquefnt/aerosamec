@@ -14,6 +14,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { formatearFechaHoraLocal } from '@/lib/timezone';
+import { capitalizarNombre, formatearDNIMostrar, formatearInstitucion, formatearTelefono, limpiarTexto } from '@/lib/formatters';
 
 interface Hospital {
   id: string;
@@ -71,7 +72,7 @@ interface Traslado {
   prioridad: string;
   tipoComplejidad: string;
   categoriaPaciente: string;
-  hospitalOrigen: { nombre: string };
+  hospitalOrigen: { nombre: string }; 
   hospitalDestino: { nombre: string };
   usuarioCreador: { nombre: string; apellido: string };
 }
@@ -280,15 +281,27 @@ export default function GestionTrasladosPage() {
     setSuccess('');
 
     try {
+      const payload = {
+        ...formData,
+        pacienteNombre: capitalizarNombre(formData.pacienteNombre),
+        pacienteApellido: capitalizarNombre(formData.pacienteApellido),
+        pacienteDomicilio: limpiarTexto(formData.pacienteDomicilio),
+        pacienteLocalidad: capitalizarNombre(formData.pacienteLocalidad),
+        institucionSolicitante: formatearInstitucion(formData.institucionSolicitante),
+        profesionalNombre: capitalizarNombre(formData.profesionalNombre),
+        profesionalCelular: formatearTelefono(formData.profesionalCelular),
+        motivoPedido: limpiarTexto(formData.motivoPedido),
+        diagnosticos: limpiarTexto(formData.diagnosticos),
+        numeroObraSocial: formData.numeroObraSocial ? limpiarTexto(formData.numeroObraSocial) : '',
+        usuarioCreadorId: session?.user?.id
+      };
+
       const response = await fetch('/api/traslados', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...formData,
-          usuarioCreadorId: session?.user?.id
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -376,15 +389,27 @@ export default function GestionTrasladosPage() {
     setSuccess('');
 
     try {
+      const payload = {
+        id: editingTraslado.id,
+        ...editFormData,
+        pacienteNombre: capitalizarNombre(editFormData.pacienteNombre),
+        pacienteApellido: capitalizarNombre(editFormData.pacienteApellido),
+        pacienteDomicilio: limpiarTexto(editFormData.pacienteDomicilio),
+        pacienteLocalidad: capitalizarNombre(editFormData.pacienteLocalidad),
+        institucionSolicitante: formatearInstitucion(editFormData.institucionSolicitante),
+        profesionalNombre: capitalizarNombre(editFormData.profesionalNombre),
+        profesionalCelular: formatearTelefono(editFormData.profesionalCelular),
+        motivoPedido: limpiarTexto(editFormData.motivoPedido),
+        diagnosticos: limpiarTexto(editFormData.diagnosticos),
+        numeroObraSocial: editFormData.numeroObraSocial ? limpiarTexto(editFormData.numeroObraSocial) : '',
+      };
+
       const response = await fetch('/api/traslados/editar', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          id: editingTraslado.id,
-          ...editFormData
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -467,15 +492,21 @@ export default function GestionTrasladosPage() {
     setError('');
 
     try {
+      const payload = {
+        id: trasladoEquipo.id,
+        ...equipoData,
+        medicoNombre: equipoData.medicoNombre ? capitalizarNombre(equipoData.medicoNombre) : '',
+        enfermeroNombre: equipoData.enfermeroNombre ? capitalizarNombre(equipoData.enfermeroNombre) : '',
+        pilotoNombre: equipoData.pilotoNombre ? capitalizarNombre(equipoData.pilotoNombre) : '',
+        matriculaAeronave: equipoData.matriculaAeronave ? limpiarTexto(equipoData.matriculaAeronave).toUpperCase() : '',
+      };
+
       const response = await fetch('/api/traslados/equipo', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          id: trasladoEquipo.id,
-          ...equipoData
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -695,7 +726,7 @@ export default function GestionTrasladosPage() {
                     <div>
                       <span className="font-medium text-gray-700">Paciente:</span>
                       <p className="text-gray-900">{traslado.pacienteNombre} {traslado.pacienteApellido}</p>
-                      <p className="text-gray-600">DNI: {traslado.pacienteDni}</p>
+                      <p className="text-gray-600">DNI: {formatearDNIMostrar(traslado.pacienteDni)}</p>
                       <p className="text-gray-600">Sexo: {traslado.pacienteSexo}</p>
                     </div>
                     <div>
@@ -1624,7 +1655,7 @@ export default function GestionTrasladosPage() {
                       {trasladoToDelete.pacienteNombre} {trasladoToDelete.pacienteApellido}
                     </div>
                     <div className="text-red-600">
-                      DNI: {trasladoToDelete.pacienteDni}
+                      DNI: {formatearDNIMostrar(trasladoToDelete.pacienteDni)}
                     </div>
                     <div className="text-red-600">
                       Estado: {trasladoToDelete.estado}
