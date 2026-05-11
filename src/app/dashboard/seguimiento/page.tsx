@@ -719,7 +719,7 @@ const registrarProcedimiento = async (e: React.FormEvent) => {
                 {/* Epicrisis */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Epicrisis / Debriefing</CardTitle>
+                    <CardTitle>Epicrisis</CardTitle>
                     <CardDescription>
                       Resumen final del traslado y observaciones generales
                     </CardDescription>
