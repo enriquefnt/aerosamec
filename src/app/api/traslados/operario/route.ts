@@ -80,6 +80,14 @@ export async function GET(request: Request) {
             }
           },
           orderBy: { fechaHora: 'desc' }
+        },
+        evaluacionesIniciales: {
+          include: {
+            usuario: {
+              select: { nombre: true, apellido: true }
+            }
+          },
+          orderBy: { fechaHora: 'desc' }
         }
       },
       orderBy: {

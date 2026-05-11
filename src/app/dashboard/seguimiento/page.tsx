@@ -34,6 +34,7 @@ interface Traslado {
   procedimientos: Array<{ id: string; fechaHora: string; tipo: string; descripcion: string; observaciones?: string }>;
   medicaciones: Array<{ id: string; fechaHora: string; medicamento: string; dosis: string; via: string; observaciones?: string }>;
   controlesSignos: Array<{ id: string; fechaHora: string; frecuenciaCardiaca?: string; frecuenciaRespiratoria?: string; presionArterialSist?: string; presionArterialDiast?: string; temperatura?: string; saturacionO2?: string; escalaGlasgow?: string; observaciones?: string }>;
+  evaluacionesIniciales: Array<{ id: string; fechaHora: string; diagnostico: string; viaAerea: string; respiracion: string; hemodinamia: string; neurologico: string }>;
   epicrisis?: string;
 }
 
@@ -51,6 +52,7 @@ export default function SeguimientoMedicoPage() {
   const [showMedicacionDialog, setShowMedicacionDialog] = useState(false);
   const [showSignosDialog, setShowSignosDialog] = useState(false);
   const [showEstadoDialog, setShowEstadoDialog] = useState(false);
+  const [showEvaluacionInicialDialog, setShowEvaluacionInicialDialog] = useState(false);
 
   // Estados de carga
   const [savingProcedimiento, setSavingProcedimiento] = useState(false);
@@ -58,6 +60,7 @@ export default function SeguimientoMedicoPage() {
   const [savingSignos, setSavingSignos] = useState(false);
   const [updatingEstado, setUpdatingEstado] = useState(false);
   const [savingEpicrisis, setSavingEpicrisis] = useState(false);
+  const [savingEvaluacionInicial, setSavingEvaluacionInicial] = useState(false);
 
   // Form states
   const [procedimientoForm, setProcedimientoForm] = useState({
@@ -89,6 +92,13 @@ export default function SeguimientoMedicoPage() {
 
   const [nuevoEstado, setNuevoEstado] = useState('');
   const [epicrisis, setEpicrisis] = useState('');
+  const [evaluacionInicialForm, setEvaluacionInicialForm] = useState({
+    diagnostico: '',
+    viaAerea: '',
+    respiracion: '',
+    hemodinamia: '',
+    neurologico: ''
+  });
 
   // Función para obtener fecha/hora actual del dispositivo
   const obtenerFechaHoraActual = () => {
@@ -388,6 +398,54 @@ const registrarProcedimiento = async (e: React.FormEvent) => {
     }
   };
 
+  const guardarEvaluacionInicial = async () => {
+    if (!trasladoSeleccionado) return;
+
+    if (
+      !evaluacionInicialForm.diagnostico.trim() ||
+      !evaluacionInicialForm.viaAerea ||
+      !evaluacionInicialForm.respiracion ||
+      !evaluacionInicialForm.hemodinamia ||
+      !evaluacionInicialForm.neurologico
+    ) {
+      setError('Complete diagnóstico y todas las variables de la evaluación inicial.');
+      return;
+    }
+
+    setSavingEvaluacionInicial(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/evaluaciones-iniciales', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          trasladoId: trasladoSeleccionado.id,
+          usuarioId: session?.user?.id,
+          diagnostico: evaluacionInicialForm.diagnostico,
+          viaAerea: evaluacionInicialForm.viaAerea,
+          respiracion: evaluacionInicialForm.respiracion,
+          hemodinamia: evaluacionInicialForm.hemodinamia,
+          neurologico: evaluacionInicialForm.neurologico
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccess('Evaluación inicial registrada exitosamente');
+        setShowEvaluacionInicialDialog(false);
+        await cargarTraslados();
+      } else {
+        setError(data.error || 'Error registrando evaluación inicial');
+      }
+    } catch {
+      setError('Error de conexión');
+    } finally {
+      setSavingEvaluacionInicial(false);
+    }
+  };
+
   const calcularEdadTexto = (anios?: number, meses?: number, dias?: number) => {
     if (anios === 0) {
       return `${meses || 0} meses, ${dias || 0} días`;
@@ -568,7 +626,23 @@ const registrarProcedimiento = async (e: React.FormEvent) => {
                 </Card>
 
                 {/* Botones de acción */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                  <Button
+                    onClick={() => {
+                      setEvaluacionInicialForm({
+                        diagnostico: '',
+                        viaAerea: '',
+                        respiracion: '',
+                        hemodinamia: '',
+                        neurologico: ''
+                      });
+                      setShowEvaluacionInicialDialog(true);
+                    }}
+                    variant="outline"
+                    className="border-indigo-200 text-indigo-700 hover:bg-indigo-50"
+                  >
+                    Evaluación inicial
+                  </Button>
                   <Button
                     onClick={() => {
                       inicializarFormularios();
@@ -1094,6 +1168,122 @@ const registrarProcedimiento = async (e: React.FormEvent) => {
                 </Button>
               </div>
             </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Dialog para evaluación inicial */}
+        <Dialog open={showEvaluacionInicialDialog} onOpenChange={setShowEvaluacionInicialDialog}>
+          <DialogContent className="w-[calc(100vw-2rem)] max-w-lg sm:w-full overflow-x-hidden">
+            <DialogHeader>
+              <DialogTitle>Evaluación inicial</DialogTitle>
+              <DialogDescription>
+                Registre diagnóstico y estado clínico inicial del paciente
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 min-w-0">
+              <div className="min-w-0">
+                <Label htmlFor="eval-diagnostico">Diagnóstico</Label>
+                <Textarea
+                  id="eval-diagnostico"
+                  value={evaluacionInicialForm.diagnostico}
+                  onChange={(e) => setEvaluacionInicialForm({ ...evaluacionInicialForm, diagnostico: e.target.value })}
+                  placeholder="Ingrese el diagnóstico inicial..."
+                  rows={3}
+                  className="w-full min-w-0 max-w-full"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="eval-via-aerea">Vía Aérea</Label>
+                <Select
+                  value={evaluacionInicialForm.viaAerea}
+                  onValueChange={(value) => setEvaluacionInicialForm({ ...evaluacionInicialForm, viaAerea: value })}
+                >
+                  <SelectTrigger id="eval-via-aerea" className="w-full min-w-0">
+                    <SelectValue placeholder="Seleccionar estado de vía aérea" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Permeable">Permeable</SelectItem>
+                    <SelectItem value="Obstruida">Obstruida</SelectItem>
+                    <SelectItem value="Asegurada (TET)">Asegurada (TET)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="eval-respiracion">Respiración</Label>
+                <Select
+                  value={evaluacionInicialForm.respiracion}
+                  onValueChange={(value) => setEvaluacionInicialForm({ ...evaluacionInicialForm, respiracion: value })}
+                >
+                  <SelectTrigger id="eval-respiracion" className="w-full min-w-0">
+                    <SelectValue placeholder="Seleccionar estado respiratorio" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Normal">Normal</SelectItem>
+                    <SelectItem value="Dificultad">Dificultad</SelectItem>
+                    <SelectItem value="Asistida">Asistida</SelectItem>
+                    <SelectItem value="Apnea">Apnea</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="eval-hemodinamia">Hemodinamia</Label>
+                <Select
+                  value={evaluacionInicialForm.hemodinamia}
+                  onValueChange={(value) => setEvaluacionInicialForm({ ...evaluacionInicialForm, hemodinamia: value })}
+                >
+                  <SelectTrigger id="eval-hemodinamia" className="w-full min-w-0">
+                    <SelectValue placeholder="Seleccionar estado hemodinámico" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Estable">Estable</SelectItem>
+                    <SelectItem value="Inestable">Inestable</SelectItem>
+                    <SelectItem value="Shock">Shock</SelectItem>
+                    <SelectItem value="PCR">PCR</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="eval-neurologico">Neurológico</Label>
+                <Select
+                  value={evaluacionInicialForm.neurologico}
+                  onValueChange={(value) => setEvaluacionInicialForm({ ...evaluacionInicialForm, neurologico: value })}
+                >
+                  <SelectTrigger id="eval-neurologico" className="w-full min-w-0">
+                    <SelectValue placeholder="Seleccionar estado neurológico" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Alerta">Alerta</SelectItem>
+                    <SelectItem value="Verbal">Verbal</SelectItem>
+                    <SelectItem value="Dolor">Dolor</SelectItem>
+                    <SelectItem value="No responde">No responde</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowEvaluacionInicialDialog(false)}
+                  disabled={savingEvaluacionInicial}
+                  className="w-full sm:w-auto"
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  type="button"
+                  onClick={guardarEvaluacionInicial}
+                  disabled={savingEvaluacionInicial}
+                  className="w-full sm:w-auto"
+                >
+                  {savingEvaluacionInicial ? 'Guardando...' : 'Guardar evaluación'}
+                </Button>
+              </div>
+            </div>
           </DialogContent>
         </Dialog>
 
