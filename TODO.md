@@ -1,26 +1,14 @@
-- [x] Investigar por qué el DNI se muestra sin puntos en gestión de usuarios
-- [x] Definir plan de corrección (formateo solo de visualización)
-- [x] Agregar función de formateo visual DNI en `src/lib/formatters.ts`
-- [x] Aplicar formateo en `src/app/dashboard/usuarios/page.tsx` (tabla, cards y diálogo)
-- [x] Probar rápidamente que el formato se vea correcto y no rompa creación/edición
-- [x] Actualizar TODO con tareas completadas
+# TODO - Corrección endpoint `/api/traslados/operario` + testing thorough
 
-- [x] Definir plan para normalizar texto en carga/edición (trim + espacios + capitalización)
-- [ ] Revisar y actualizar utilidades en `src/lib/formatters.ts` para nombres/localidades/direcciones
-- [ ] Aplicar normalización en envío de formularios de `src/app/dashboard/usuarios/page.tsx`
-- [ ] Revisar formularios de `src/app/dashboard/traslados/page.tsx` y aplicar normalización en campos de texto
-- [ ] Ejecutar pruebas funcionales de creación/edición en usuarios y traslados
-- [ ] Actualizar TODO final de esta tarea
-
-- [x] Definir estado local para "Evaluación inicial" en `src/app/dashboard/seguimiento/page.tsx`
-- [x] Agregar botón "Evaluación inicial" en acciones de seguimiento
-- [x] Implementar Dialog con diagnóstico + 4 selects (Vía Aérea, Respiración, Hemodinamia, Neurológico)
-- [x] Conectar acciones de abrir/cerrar/guardar local del formulario
-- [ ] Marcar tareas completadas en TODO
-- [ ] Ajustar modal de "Evaluación inicial" para mobile (sin desborde horizontal)
-- [ ] Reordenar acciones para que "Evaluación inicial" sea el primer botón
-- [ ] Agregar modelo `EvaluacionInicial` en Prisma y relaciones en `Usuario`/`Traslado`
-- [ ] Crear endpoint `POST /api/evaluaciones-iniciales`
-- [ ] Incluir `evaluacionesIniciales` en `GET /api/traslados/operario`
-- [ ] Conectar modal de Evaluación inicial al POST real
-- [ ] Ejecutar/indicar migración Prisma para aplicar cambios de DB
+- [x] Revisar y ajustar extracción de `operarioId/userId` para GET y POST en `src/app/api/traslados/operario/route.ts`
+- [x] Implementar normalización/validación de identificador y respuestas 400/500 consistentes
+- [x] Unificar lógica de filtrado de traslados para evitar duplicación entre métodos
+- [x] Soportar `POST /api/traslados/operario` además de `GET`
+- [ ] Ejecutar pruebas curl (thorough):
+  - [ ] GET con `operarioId`
+  - [ ] GET con `userId`
+  - [ ] POST con `operarioId`
+  - [ ] POST con `userId`
+  - [ ] Faltante de ID => 400
+  - [ ] ID vacío/inválido => 400
+- [ ] Documentar resultados finales de testing
