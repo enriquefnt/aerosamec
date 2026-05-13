@@ -1,7 +1,13 @@
-# TODO - Mejorar selección de traslado (mobile-operador)
+# TODO - Dropdowns en formularios mobile (alineado con web)
 
-- [x] Agregar función API para obtener traslados del operario con datos de paciente/horario.
-- [x] Actualizar SeguimientoScreen para cargar y mostrar traslados en selector legible (nombre paciente + horario).
-- [x] Reemplazar flujo de ingreso manual de ID por selección de traslado.
-- [x] Mejorar mensaje "Traslado seleccionado" para mostrar referencia comprensible.
-- [x] Validar estado sin traslados y errores de carga.
+- [x] Crear componente reutilizable de dropdown nativo en `mobile-operador/src/components/`
+- [x] Actualizar `mobile-operador/src/screens/EvaluacionInicialScreen.tsx`
+  - [x] Reemplazar vía aérea, respiración, hemodinamia y neurológico por dropdowns
+  - [x] Mantener valores exactos esperados por backend
+- [x] Actualizar `mobile-operador/src/screens/ProcedimientoScreen.tsx`
+  - [x] Reemplazar campo tipo por dropdown con opciones de web
+- [x] Actualizar `mobile-operador/src/screens/MedicacionScreen.tsx`
+  - [x] Reemplazar vía por dropdown con opciones de web
+- [x] Actualizar `mobile-operador/src/screens/SignosVitalesScreen.tsx`
+  - [x] Reemplazar Glasgow por dropdown con opciones de web
+- [ ] Ejecutar chequeo de TypeScript del proyecto mobile
