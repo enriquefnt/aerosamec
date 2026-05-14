@@ -2,6 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
 import { useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
 import EvaluacionInicialScreen from './src/screens/EvaluacionInicialScreen';
 import HistorialSyncScreen from './src/screens/HistorialSyncScreen';
@@ -23,6 +24,7 @@ function Root() {
   const { usuario, loading } = useAuth();
   const [screen, setScreen] = useState<ScreenName>('seguimiento');
   const [trasladoId, setTrasladoId] = useState('');
+  const [trasladoLabel, setTrasladoLabel] = useState('');
   const [online, setOnline] = useState(true);
 
   if (loading) {
@@ -48,7 +50,11 @@ function Root() {
           onOpenProcedimiento={() => setScreen('procedimiento')}
           onOpenMedicacion={() => setScreen('medicacion')}
           onOpenSignos={() => setScreen('signos')}
-          onTrasladoChange={setTrasladoId}
+          selectedTrasladoId={trasladoId}
+          onTrasladoChange={(id: string, label: string) => {
+            setTrasladoId(id);
+            setTrasladoLabel(label);
+          }}
           onOnlineChange={setOnline}
         />
       ) : null}
@@ -58,6 +64,7 @@ function Root() {
           trasladoId={trasladoId}
           usuarioId={usuarioId}
           online={online}
+          trasladoLabel={trasladoLabel}
           onBack={() => setScreen('seguimiento')}
         />
       ) : null}
@@ -67,6 +74,7 @@ function Root() {
           trasladoId={trasladoId}
           usuarioId={usuarioId}
           online={online}
+          trasladoLabel={trasladoLabel}
           onBack={() => setScreen('seguimiento')}
         />
       ) : null}
@@ -76,6 +84,7 @@ function Root() {
           trasladoId={trasladoId}
           usuarioId={usuarioId}
           online={online}
+          trasladoLabel={trasladoLabel}
           onBack={() => setScreen('seguimiento')}
         />
       ) : null}
@@ -85,6 +94,7 @@ function Root() {
           trasladoId={trasladoId}
           usuarioId={usuarioId}
           online={online}
+          trasladoLabel={trasladoLabel}
           onBack={() => setScreen('seguimiento')}
         />
       ) : null}
@@ -98,9 +108,11 @@ function Root() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <Root />
-    </AuthProvider>
+    <SafeAreaProvider>
+      <AuthProvider>
+        <Root />
+      </AuthProvider>
+    </SafeAreaProvider>
   );
 }
 

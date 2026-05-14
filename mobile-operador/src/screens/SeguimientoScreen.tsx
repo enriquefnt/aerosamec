@@ -1,10 +1,11 @@
 import NetInfo from '@react-native-community/netinfo';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { obtenerTrasladosOperario, TrasladoOperario } from '../api/seguimiento';
+import ScreenContainer from '../components/ScreenContainer';
 import { useAuth } from '../context/AuthContext';
 import { syncPendingItems } from '../services/syncService';
-import { obtenerTrasladosOperario, TrasladoOperario } from '../api/seguimiento';
 
 export default function SeguimientoScreen({
   onOpenHistorial,
@@ -12,6 +13,7 @@ export default function SeguimientoScreen({
   onOpenProcedimiento,
   onOpenMedicacion,
   onOpenSignos,
+  selectedTrasladoId,
   onTrasladoChange,
   onOnlineChange,
 }: {
@@ -20,12 +22,13 @@ export default function SeguimientoScreen({
   onOpenProcedimiento: () => void;
   onOpenMedicacion: () => void;
   onOpenSignos: () => void;
-  onTrasladoChange: (trasladoId: string) => void;
+  selectedTrasladoId: string;
+  onTrasladoChange: (trasladoId: string, trasladoLabel: string) => void;
   onOnlineChange: (online: boolean) => void;
 }) {
   const { usuario, logout } = useAuth();
   const [online, setOnline] = useState<boolean>(true);
-  const [trasladoId, setTrasladoId] = useState('');
+  const [trasladoId, setTrasladoId] = useState(selectedTrasladoId || '');
   const [traslados, setTraslados] = useState<TrasladoOperario[]>([]);
   const [loadingTraslados, setLoadingTraslados] = useState(false);
 
@@ -37,6 +40,10 @@ export default function SeguimientoScreen({
     });
     return () => sub();
   }, [onOnlineChange]);
+
+  useEffect(() => {
+    setTrasladoId(selectedTrasladoId || '');
+  }, [selectedTrasladoId]);
 
   const usuarioId = usuario?.id || '';
 
@@ -78,12 +85,21 @@ export default function SeguimientoScreen({
         });
 
         setTraslados(activos);
-        setTrasladoId((prev) => (activos.some((t) => t.id === prev) ? prev : ''));
+        setTrasladoId((prev) => {
+          const stillExists = activos.some((t) => t.id === prev);
+          if (stillExists) {
+            const selected = activos.find((t) => t.id === prev);
+            if (selected) onTrasladoChange(selected.id, nombrePaciente(selected));
+            return prev;
+          }
+          onTrasladoChange('', '');
+          return '';
+        });
 
         if (activos.length === 1) {
           const unico = activos[0];
           setTrasladoId(unico.id);
-          onTrasladoChange(unico.id);
+          onTrasladoChange(unico.id, nombrePaciente(unico));
           Alert.alert('Traslado seleccionado', etiquetaTraslado(unico));
         }
       } catch (_e) {
@@ -111,7 +127,23 @@ export default function SeguimientoScreen({
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScreenContainer
+      footer={
+        <>
+          <Pressable style={[styles.button, styles.secondary]} onPress={runSync}>
+            <Text style={styles.buttonText}>Sincronizar ahora</Text>
+          </Pressable>
+
+          <Pressable style={[styles.button, styles.secondary]} onPress={onOpenHistorial}>
+            <Text style={styles.buttonText}>Ver historial de sync</Text>
+          </Pressable>
+
+          <Pressable style={[styles.button, styles.logout]} onPress={logout}>
+            <Text style={styles.buttonText}>Cerrar sesión</Text>
+          </Pressable>
+        </>
+      }
+    >
       <Text style={styles.title}>Seguimiento Operador</Text>
       <Text style={styles.subtitle}>
         Usuario: {usuario?.nombre} ({usuario?.email})
@@ -137,7 +169,7 @@ export default function SeguimientoScreen({
                 style={[styles.trasladoItem, selected && styles.trasladoItemSelected]}
                 onPress={() => {
                   setTrasladoId(t.id);
-                  onTrasladoChange(t.id);
+                  onTrasladoChange(t.id, nombrePaciente(t));
                   Alert.alert('Traslado seleccionado', etiquetaTraslado(t));
                 }}
               >
@@ -169,25 +201,11 @@ export default function SeguimientoScreen({
           <Text style={styles.buttonText}>Signos vitales</Text>
         </Pressable>
       </View>
-
-      <Pressable style={[styles.button, styles.secondary]} onPress={runSync}>
-        <Text style={styles.buttonText}>Sincronizar ahora</Text>
-      </Pressable>
-
-      <Pressable style={[styles.button, styles.secondary]} onPress={onOpenHistorial}>
-        <Text style={styles.buttonText}>Ver historial de sync</Text>
-      </Pressable>
-
-      <Pressable style={[styles.button, styles.logout]} onPress={logout}>
-        <Text style={styles.buttonText}>Cerrar sesión</Text>
-      </Pressable>
-    </ScrollView>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f3f4f6' },
-  content: { padding: 16, paddingBottom: 40 },
   title: { fontSize: 24, fontWeight: '700', color: '#111827' },
   subtitle: { marginTop: 4, marginBottom: 12, color: '#4b5563' },
   banner: { padding: 10, borderRadius: 10, marginBottom: 12 },

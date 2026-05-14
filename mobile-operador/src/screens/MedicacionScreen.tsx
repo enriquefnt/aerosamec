@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import DateTimeField, { formatLocalDateTime } from '../components/DateTimeField';
+import ScreenContainer from '../components/ScreenContainer';
 import SelectField, { SelectOption } from '../components/SelectField';
 import { addQueueItem } from '../storage/queueStorage';
 import { syncPendingItems } from '../services/syncService';
@@ -44,18 +46,20 @@ export default function MedicacionScreen({
   trasladoId,
   usuarioId,
   online,
+  trasladoLabel,
   onBack,
 }: {
   trasladoId: string;
   usuarioId: string;
   online: boolean;
+  trasladoLabel: string;
   onBack: () => void;
 }) {
   const [medicamento, setMedicamento] = useState('');
   const [dosis, setDosis] = useState('');
   const [via, setVia] = useState('');
   const [observaciones, setObservaciones] = useState('');
-  const [fechaHora, setFechaHora] = useState(new Date().toISOString().slice(0, 16));
+  const [fechaHora, setFechaHora] = useState(formatLocalDateTime(new Date()));
 
   const submitMedicacion = async () => {
     if (!trasladoId.trim()) {
@@ -85,12 +89,18 @@ export default function MedicacionScreen({
     setDosis('');
     setVia('');
     setObservaciones('');
-    setFechaHora(new Date().toISOString().slice(0, 16));
+    setFechaHora(formatLocalDateTime(new Date()));
     Alert.alert('OK', online ? 'Guardado y sincronizado (o en proceso)' : 'Guardado offline en cola');
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScreenContainer
+      footer={
+        <Pressable style={[styles.button, styles.secondary]} onPress={onBack}>
+          <Text style={styles.buttonText}>Volver a Seguimiento</Text>
+        </Pressable>
+      }
+    >
       <Text style={styles.title}>Registrar medicación</Text>
 
       <View style={[styles.banner, online ? styles.online : styles.offline]}>
@@ -99,13 +109,12 @@ export default function MedicacionScreen({
 
       <View style={styles.card}>
         <Text style={styles.label}>Traslado seleccionado</Text>
-        <Text style={styles.value}>{trasladoId ? trasladoId : 'Ninguno seleccionado'}</Text>
+        <Text style={styles.value}>{trasladoLabel ? trasladoLabel : 'Ninguno seleccionado'}</Text>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Fecha y hora (YYYY-MM-DDTHH:mm)"
+        <DateTimeField
+          label="Fecha y hora"
           value={fechaHora}
-          onChangeText={setFechaHora}
+          onChangeValue={setFechaHora}
         />
 
         <TextInput style={styles.input} placeholder="Medicamento" value={medicamento} onChangeText={setMedicamento} />
@@ -130,16 +139,11 @@ export default function MedicacionScreen({
         </Pressable>
       </View>
 
-      <Pressable style={[styles.button, styles.secondary]} onPress={onBack}>
-        <Text style={styles.buttonText}>Volver a Seguimiento</Text>
-      </Pressable>
-    </ScrollView>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f3f4f6' },
-  content: { padding: 16, paddingBottom: 40 },
   title: { fontSize: 24, fontWeight: '700', color: '#111827', marginBottom: 12 },
   banner: { padding: 10, borderRadius: 10, marginBottom: 12 },
   online: { backgroundColor: '#dcfce7' },

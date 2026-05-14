@@ -13,8 +13,22 @@ export async function saveQueue(items: QueueItem[]) {
   await AsyncStorage.setItem(QUEUE_KEY, JSON.stringify(items));
 }
 
+function isSamePayload(a: unknown, b: unknown): boolean {
+  return JSON.stringify(a) === JSON.stringify(b);
+}
+
 export async function addQueueItem(item: QueueItem) {
   const queue = await getQueue();
+
+  const alreadyExists = queue.some((q) => {
+    const isCandidate = q.estado === 'pending' || q.estado === 'error';
+    return isCandidate && q.tipo === item.tipo && isSamePayload(q.payload, item.payload);
+  });
+
+  if (alreadyExists) {
+    return;
+  }
+
   queue.push(item);
   await saveQueue(queue);
 }

@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import DateTimeField, { formatLocalDateTime } from '../components/DateTimeField';
+import ScreenContainer from '../components/ScreenContainer';
 import SelectField, { SelectOption } from '../components/SelectField';
 import { addQueueItem } from '../storage/queueStorage';
 import { syncPendingItems } from '../services/syncService';
@@ -45,19 +47,23 @@ export default function ProcedimientoScreen({
   trasladoId,
   usuarioId,
   online,
+  trasladoLabel,
   onBack,
 }: {
   trasladoId: string;
   usuarioId: string;
   online: boolean;
+  trasladoLabel: string;
   onBack: () => void;
 }) {
   const [tipo, setTipo] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [observaciones, setObservaciones] = useState('');
-  const [fechaHora, setFechaHora] = useState(new Date().toISOString().slice(0, 16));
+  const [fechaHora, setFechaHora] = useState(formatLocalDateTime(new Date()));
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const submitProcedimiento = async () => {
+    if (isSubmitting) return;
     if (!trasladoId.trim()) {
       Alert.alert('Validación', 'Selecciona un traslado en Seguimiento');
       return;
@@ -68,27 +74,39 @@ export default function ProcedimientoScreen({
       return;
     }
 
-    await guardarConCola(
-      {
-        trasladoId,
-        usuarioId,
-        tipoRaw: tipo,
-        descripcionRaw: descripcion,
-        observacionesRaw: observaciones,
-        fechaHora,
-      },
-      online
-    );
+    try {
+      setIsSubmitting(true);
 
-    setTipo('');
-    setDescripcion('');
-    setObservaciones('');
-    setFechaHora(new Date().toISOString().slice(0, 16));
-    Alert.alert('OK', online ? 'Guardado y sincronizado (o en proceso)' : 'Guardado offline en cola');
+      await guardarConCola(
+        {
+          trasladoId,
+          usuarioId,
+          tipoRaw: tipo,
+          descripcionRaw: descripcion,
+          observacionesRaw: observaciones,
+          fechaHora,
+        },
+        online
+      );
+
+      setTipo('');
+      setDescripcion('');
+      setObservaciones('');
+      setFechaHora(formatLocalDateTime(new Date()));
+      Alert.alert('OK', online ? 'Guardado y sincronizado (o en proceso)' : 'Guardado offline en cola');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScreenContainer
+      footer={
+        <Pressable style={[styles.button, styles.secondary]} onPress={onBack}>
+          <Text style={styles.buttonText}>Volver a Seguimiento</Text>
+        </Pressable>
+      }
+    >
       <Text style={styles.title}>Registrar procedimiento</Text>
 
       <View style={[styles.banner, online ? styles.online : styles.offline]}>
@@ -97,13 +115,12 @@ export default function ProcedimientoScreen({
 
       <View style={styles.card}>
         <Text style={styles.label}>Traslado seleccionado</Text>
-        <Text style={styles.value}>{trasladoId ? trasladoId : 'Ninguno seleccionado'}</Text>
+        <Text style={styles.value}>{trasladoLabel ? trasladoLabel : 'Ninguno seleccionado'}</Text>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Fecha y hora (YYYY-MM-DDTHH:mm)"
+        <DateTimeField
+          label="Fecha y hora"
           value={fechaHora}
-          onChangeText={setFechaHora}
+          onChangeValue={setFechaHora}
         />
 
         <SelectField
@@ -129,21 +146,22 @@ export default function ProcedimientoScreen({
           multiline
         />
 
-        <Pressable style={styles.button} onPress={submitProcedimiento}>
-          <Text style={styles.buttonText}>Guardar Procedimiento</Text>
+        <Pressable
+          style={[styles.button, isSubmitting && styles.buttonDisabled]}
+          onPress={submitProcedimiento}
+          disabled={isSubmitting}
+        >
+          <Text style={styles.buttonText}>
+            {isSubmitting ? 'Guardando...' : 'Guardar Procedimiento'}
+          </Text>
         </Pressable>
       </View>
 
-      <Pressable style={[styles.button, styles.secondary]} onPress={onBack}>
-        <Text style={styles.buttonText}>Volver a Seguimiento</Text>
-      </Pressable>
-    </ScrollView>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f3f4f6' },
-  content: { padding: 16, paddingBottom: 40 },
   title: { fontSize: 24, fontWeight: '700', color: '#111827', marginBottom: 12 },
   banner: { padding: 10, borderRadius: 10, marginBottom: 12 },
   online: { backgroundColor: '#dcfce7' },
@@ -177,5 +195,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   secondary: { backgroundColor: '#1d4ed8' },
+  buttonDisabled: { opacity: 0.7 },
   buttonText: { color: '#fff', fontWeight: '600' },
 });

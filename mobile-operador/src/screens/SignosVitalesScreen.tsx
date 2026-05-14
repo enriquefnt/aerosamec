@@ -1,25 +1,13 @@
 import * as React from 'react';
 import { useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import SelectField, { SelectOption } from '../components/SelectField';
+import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import DateTimeField, { formatLocalDateTime } from '../components/DateTimeField';
+import ScreenContainer from '../components/ScreenContainer';
 import { addQueueItem } from '../storage/queueStorage';
 import { syncPendingItems } from '../services/syncService';
 
-const OPCIONES_GLASGOW: SelectOption[] = [
-  { label: '15/15 (Normal)', value: '15' },
-  { label: '14/15 (Leve alteración)', value: '14' },
-  { label: '13/15 (Leve alteración)', value: '13' },
-  { label: '12/15 (Moderada alteración)', value: '12' },
-  { label: '11/15 (Moderada alteración)', value: '11' },
-  { label: '10/15 (Moderada alteración)', value: '10' },
-  { label: '9/15 (Severa alteración)', value: '9' },
-  { label: '8/15 (Severa alteración)', value: '8' },
-  { label: '7/15 (Severa alteración)', value: '7' },
-  { label: '6/15 (Severa alteración)', value: '6' },
-  { label: '5/15 (Severa alteración)', value: '5' },
-  { label: '4/15 (Severa alteración)', value: '4' },
-  { label: '3/15 (Coma)', value: '3' },
-];
+const GLASGOW_MIN = 3;
+const GLASGOW_MAX = 15;
 
 function createLocalId() {
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -50,11 +38,13 @@ export default function SignosVitalesScreen({
   trasladoId,
   usuarioId,
   online,
+  trasladoLabel,
   onBack,
 }: {
   trasladoId: string;
   usuarioId: string;
   online: boolean;
+  trasladoLabel: string;
   onBack: () => void;
 }) {
   const [fc, setFc] = useState('');
@@ -63,9 +53,9 @@ export default function SignosVitalesScreen({
   const [taDiast, setTaDiast] = useState('');
   const [temperatura, setTemperatura] = useState('');
   const [saturacionO2, setSaturacionO2] = useState('');
-  const [escalaGlasgow, setEscalaGlasgow] = useState('');
+  const [escalaGlasgow, setEscalaGlasgow] = useState('15');
   const [observaciones, setObservaciones] = useState('');
-  const [fechaHora, setFechaHora] = useState(new Date().toISOString().slice(0, 16));
+  const [fechaHora, setFechaHora] = useState(formatLocalDateTime(new Date()));
 
   const submitSignos = async () => {
     if (!trasladoId.trim()) {
@@ -101,14 +91,20 @@ export default function SignosVitalesScreen({
     setTaDiast('');
     setTemperatura('');
     setSaturacionO2('');
-    setEscalaGlasgow('');
+    setEscalaGlasgow('15');
     setObservaciones('');
-    setFechaHora(new Date().toISOString().slice(0, 16));
+    setFechaHora(formatLocalDateTime(new Date()));
     Alert.alert('OK', online ? 'Guardado y sincronizado (o en proceso)' : 'Guardado offline en cola');
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScreenContainer
+      footer={
+        <Pressable style={[styles.button, styles.secondary]} onPress={onBack}>
+          <Text style={styles.buttonText}>Volver a Seguimiento</Text>
+        </Pressable>
+      }
+    >
       <Text style={styles.title}>Registrar signos vitales</Text>
 
       <View style={[styles.banner, online ? styles.online : styles.offline]}>
@@ -117,13 +113,12 @@ export default function SignosVitalesScreen({
 
       <View style={styles.card}>
         <Text style={styles.label}>Traslado seleccionado</Text>
-        <Text style={styles.value}>{trasladoId ? trasladoId : 'Ninguno seleccionado'}</Text>
+        <Text style={styles.value}>{trasladoLabel ? trasladoLabel : 'Ninguno seleccionado'}</Text>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Fecha y hora (YYYY-MM-DDTHH:mm)"
+        <DateTimeField
+          label="Fecha y hora"
           value={fechaHora}
-          onChangeText={setFechaHora}
+          onChangeValue={setFechaHora}
         />
 
         <TextInput style={styles.input} placeholder="Frecuencia cardíaca (lpm)" value={fc} onChangeText={setFc} />
@@ -132,13 +127,33 @@ export default function SignosVitalesScreen({
         <TextInput style={styles.input} placeholder="TA diastólica (mmHg)" value={taDiast} onChangeText={setTaDiast} />
         <TextInput style={styles.input} placeholder="Temperatura (°C)" value={temperatura} onChangeText={setTemperatura} />
         <TextInput style={styles.input} placeholder="Saturación O2 (%)" value={saturacionO2} onChangeText={setSaturacionO2} />
-        <SelectField
-          label="Escala de Glasgow"
-          placeholder="Seleccionar score"
-          value={escalaGlasgow}
-          options={OPCIONES_GLASGOW}
-          onChange={setEscalaGlasgow}
-        />
+        <View style={styles.glasgowContainer}>
+          <Text style={styles.label}>Escala de Glasgow</Text>
+          <View style={styles.glasgowStepper}>
+            <Pressable
+              style={[styles.stepperButton, Number(escalaGlasgow) <= GLASGOW_MIN && styles.stepperButtonDisabled]}
+              disabled={Number(escalaGlasgow) <= GLASGOW_MIN}
+              onPress={() => setEscalaGlasgow(String(Math.max(GLASGOW_MIN, Number(escalaGlasgow) - 1)))}
+            >
+              <Text style={styles.stepperButtonText}>-</Text>
+            </Pressable>
+
+            <View style={styles.stepperValueBox}>
+              <Text style={styles.stepperValueText}>{escalaGlasgow}/15</Text>
+            </View>
+
+            <Pressable
+              style={[styles.stepperButton, Number(escalaGlasgow) >= GLASGOW_MAX && styles.stepperButtonDisabled]}
+              disabled={Number(escalaGlasgow) >= GLASGOW_MAX}
+              onPress={() => setEscalaGlasgow(String(Math.min(GLASGOW_MAX, Number(escalaGlasgow) + 1)))}
+            >
+              <Text style={styles.stepperButtonText}>+</Text>
+            </Pressable>
+          </View>
+          <Text style={styles.glasgowHelp}>
+            15 = Normal, 13-14 = Leve, 9-12 = Moderado, 3-8 = Severo
+          </Text>
+        </View>
         <TextInput
           style={[styles.input, styles.multiline]}
           placeholder="Observaciones"
@@ -152,16 +167,11 @@ export default function SignosVitalesScreen({
         </Pressable>
       </View>
 
-      <Pressable style={[styles.button, styles.secondary]} onPress={onBack}>
-        <Text style={styles.buttonText}>Volver a Seguimiento</Text>
-      </Pressable>
-    </ScrollView>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f3f4f6' },
-  content: { padding: 16, paddingBottom: 40 },
   title: { fontSize: 24, fontWeight: '700', color: '#111827', marginBottom: 12 },
   banner: { padding: 10, borderRadius: 10, marginBottom: 12 },
   online: { backgroundColor: '#dcfce7' },
@@ -187,6 +197,45 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   multiline: { minHeight: 90, textAlignVertical: 'top' },
+  glasgowContainer: { marginBottom: 8 },
+  glasgowStepper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  stepperButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 10,
+    backgroundColor: '#2563eb',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stepperButtonDisabled: {
+    backgroundColor: '#93c5fd',
+  },
+  stepperButtonText: {
+    color: '#fff',
+    fontSize: 22,
+    fontWeight: '700',
+    lineHeight: 24,
+  },
+  stepperValueBox: {
+    flex: 1,
+    minHeight: 44,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stepperValueText: {
+    color: '#111827',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  glasgowHelp: { marginTop: 6, color: '#4b5563', fontSize: 12 },
   button: {
     backgroundColor: '#2563eb',
     borderRadius: 10,
