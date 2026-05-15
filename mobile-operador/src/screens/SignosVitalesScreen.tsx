@@ -56,8 +56,11 @@ export default function SignosVitalesScreen({
   const [escalaGlasgow, setEscalaGlasgow] = useState('15');
   const [observaciones, setObservaciones] = useState('');
   const [fechaHora, setFechaHora] = useState(formatLocalDateTime(new Date()));
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const submitSignos = async () => {
+    if (isSubmitting) return;
+
     if (!trasladoId.trim()) {
       Alert.alert('Validación', 'Selecciona un traslado en Seguimiento');
       return;
@@ -68,33 +71,40 @@ export default function SignosVitalesScreen({
       return;
     }
 
-    await guardarConCola(
-      {
-        trasladoId,
-        usuarioId,
-        frecuenciaCardiaca: fc,
-        frecuenciaRespiratoria: fr,
-        presionArterialSist: taSist,
-        presionArterialDiast: taDiast,
-        temperatura,
-        saturacionO2,
-        escalaGlasgow,
-        observaciones,
-        fechaHora,
-      },
-      online
-    );
+    setIsSubmitting(true);
+    try {
+      await guardarConCola(
+        {
+          trasladoId,
+          usuarioId,
+          frecuenciaCardiaca: fc,
+          frecuenciaRespiratoria: fr,
+          presionArterialSist: taSist,
+          presionArterialDiast: taDiast,
+          temperatura,
+          saturacionO2,
+          escalaGlasgow,
+          observaciones,
+          fechaHora,
+        },
+        online
+      );
 
-    setFc('');
-    setFr('');
-    setTaSist('');
-    setTaDiast('');
-    setTemperatura('');
-    setSaturacionO2('');
-    setEscalaGlasgow('15');
-    setObservaciones('');
-    setFechaHora(formatLocalDateTime(new Date()));
-    Alert.alert('OK', online ? 'Guardado y sincronizado (o en proceso)' : 'Guardado offline en cola');
+      setFc('');
+      setFr('');
+      setTaSist('');
+      setTaDiast('');
+      setTemperatura('');
+      setSaturacionO2('');
+      setEscalaGlasgow('15');
+      setObservaciones('');
+      setFechaHora(formatLocalDateTime(new Date()));
+      Alert.alert('OK', online ? 'Guardado y sincronizado (o en proceso)' : 'Guardado offline en cola');
+    } catch (error) {
+      Alert.alert('Error', 'No se pudieron guardar los signos vitales. Inténtalo de nuevo.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -162,8 +172,12 @@ export default function SignosVitalesScreen({
           multiline
         />
 
-        <Pressable style={styles.button} onPress={submitSignos}>
-          <Text style={styles.buttonText}>Guardar Signos</Text>
+        <Pressable
+          style={[styles.button, isSubmitting && styles.buttonDisabled]}
+          onPress={submitSignos}
+          disabled={isSubmitting}
+        >
+          <Text style={styles.buttonText}>{isSubmitting ? 'Guardando...' : 'Guardar Signos'}</Text>
         </Pressable>
       </View>
 
@@ -244,5 +258,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   secondary: { backgroundColor: '#1d4ed8' },
+  buttonDisabled: { opacity: 0.7 },
   buttonText: { color: '#fff', fontWeight: '600' },
 });

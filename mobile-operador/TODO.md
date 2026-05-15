@@ -1,7 +1,13 @@
-# TODO - Evitar duplicados en registros de seguimiento
+- [x] Agregar estado `isSubmitting` en `src/screens/MedicacionScreen.tsx`
+- [x] Bloquear doble envío al inicio de `submitMedicacion`
+- [x] Implementar `try/catch/finally` en guardado para restaurar estado
+- [x] Deshabilitar botón y mostrar texto `Guardando...`
+- [x] Agregar estilo `buttonDisabled`
+- [x] Actualizar TODO marcando tareas completadas
 
-- [x] 1) Agregar bloqueo de envío (`isSubmitting`) en `ProcedimientoScreen.tsx`
-- [x] 2) Agregar bloqueo de envío (`isSubmitting`) en `EvaluacionInicialScreen.tsx`
-- [x] 3) Agregar lock global anti-concurrencia en `syncService.ts`
-- [x] 4) Agregar deduplicación en `addQueueItem` de `queueStorage.ts`
-- [x] 5) Validar TypeScript/Lint del proyecto mobile
+- [x] Agregar estado `isSubmitting` en `src/screens/SignosVitalesScreen.tsx`
+- [x] Bloquear doble envío al inicio de `submitSignos`
+- [x] Implementar `try/catch/finally` en guardado para restaurar estado
+- [x] Deshabilitar botón y mostrar texto `Guardando...`
+- [x] Agregar estilo `buttonDisabled`
+- [x] Actualizar TODO marcando tareas completadas

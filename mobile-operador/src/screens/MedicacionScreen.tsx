@@ -60,8 +60,11 @@ export default function MedicacionScreen({
   const [via, setVia] = useState('');
   const [observaciones, setObservaciones] = useState('');
   const [fechaHora, setFechaHora] = useState(formatLocalDateTime(new Date()));
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const submitMedicacion = async () => {
+    if (isSubmitting) return;
+
     if (!trasladoId.trim()) {
       Alert.alert('Validación', 'Selecciona un traslado en Seguimiento');
       return;
@@ -72,25 +75,32 @@ export default function MedicacionScreen({
       return;
     }
 
-    await guardarConCola(
-      {
-        trasladoId,
-        usuarioId,
-        medicamento,
-        dosis,
-        via,
-        observaciones,
-        fechaHora,
-      },
-      online
-    );
+    setIsSubmitting(true);
+    try {
+      await guardarConCola(
+        {
+          trasladoId,
+          usuarioId,
+          medicamento,
+          dosis,
+          via,
+          observaciones,
+          fechaHora,
+        },
+        online
+      );
 
-    setMedicamento('');
-    setDosis('');
-    setVia('');
-    setObservaciones('');
-    setFechaHora(formatLocalDateTime(new Date()));
-    Alert.alert('OK', online ? 'Guardado y sincronizado (o en proceso)' : 'Guardado offline en cola');
+      setMedicamento('');
+      setDosis('');
+      setVia('');
+      setObservaciones('');
+      setFechaHora(formatLocalDateTime(new Date()));
+      Alert.alert('OK', online ? 'Guardado y sincronizado (o en proceso)' : 'Guardado offline en cola');
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo guardar la medicación. Inténtalo de nuevo.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -134,8 +144,12 @@ export default function MedicacionScreen({
           multiline
         />
 
-        <Pressable style={styles.button} onPress={submitMedicacion}>
-          <Text style={styles.buttonText}>Guardar Medicación</Text>
+        <Pressable
+          style={[styles.button, isSubmitting && styles.buttonDisabled]}
+          onPress={submitMedicacion}
+          disabled={isSubmitting}
+        >
+          <Text style={styles.buttonText}>{isSubmitting ? 'Guardando...' : 'Guardar Medicación'}</Text>
         </Pressable>
       </View>
 
@@ -177,5 +191,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   secondary: { backgroundColor: '#1d4ed8' },
+  buttonDisabled: { opacity: 0.7 },
   buttonText: { color: '#fff', fontWeight: '600' },
 });
