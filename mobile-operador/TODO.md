@@ -1,13 +1,5 @@
-- [x] Agregar estado `isSubmitting` en `src/screens/MedicacionScreen.tsx`
-- [x] Bloquear doble envío al inicio de `submitMedicacion`
-- [x] Implementar `try/catch/finally` en guardado para restaurar estado
-- [x] Deshabilitar botón y mostrar texto `Guardando...`
-- [x] Agregar estilo `buttonDisabled`
-- [x] Actualizar TODO marcando tareas completadas
-
-- [x] Agregar estado `isSubmitting` en `src/screens/SignosVitalesScreen.tsx`
-- [x] Bloquear doble envío al inicio de `submitSignos`
-- [x] Implementar `try/catch/finally` en guardado para restaurar estado
-- [x] Deshabilitar botón y mostrar texto `Guardando...`
-- [x] Agregar estilo `buttonDisabled`
-- [x] Actualizar TODO marcando tareas completadas
+- [x] Revisar botones en Seguimiento para habilitación condicional por traslado seleccionado
+- [x] Implementar `hasSelectedTraslado` en `SeguimientoScreen.tsx`
+- [x] Deshabilitar botones de acciones (excepto Cerrar sesión) cuando no haya traslado seleccionado
+- [x] Agregar estilo visual para botones deshabilitados
+- [x] Verificar consistencia final del flujo

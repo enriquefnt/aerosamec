@@ -1,6 +1,7 @@
 //const API_BASE_URL = 'http://192.168.1.100:3000';
 //const API_BASE_URL = 'http://192.168.100.196:3000';
-const API_BASE_URL = 'http://192.168.0.130:3000';
+//const API_BASE_URL = 'http://192.168.0.130:3000';
+const API_BASE_URL = 'http://192.168.100.193:3000';
 
 /**
  * Cliente HTTP mínimo para centralizar requests.

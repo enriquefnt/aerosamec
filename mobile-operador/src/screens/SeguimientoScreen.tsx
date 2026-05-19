@@ -126,19 +126,29 @@ export default function SeguimientoScreen({
     Alert.alert('Sincronización', `Enviados: ${result.synced} | Fallidos: ${result.failed}`);
   };
 
+  const hasSelectedTraslado = trasladoId.trim().length > 0;
+
   return (
     <ScreenContainer
       footer={
         <>
-          <Pressable style={[styles.button, styles.secondary]} onPress={runSync}>
+          <Pressable
+            style={[styles.button, styles.secondary, !hasSelectedTraslado && styles.buttonDisabled]}
+            onPress={runSync}
+            disabled={!hasSelectedTraslado}
+          >
             <Text style={styles.buttonText}>Sincronizar ahora</Text>
           </Pressable>
 
-          <Pressable style={[styles.button, styles.secondary]} onPress={onOpenHistorial}>
+          <Pressable
+            style={[styles.button, styles.secondary, !hasSelectedTraslado && styles.buttonDisabled]}
+            onPress={onOpenHistorial}
+            disabled={!hasSelectedTraslado}
+          >
             <Text style={styles.buttonText}>Ver historial de sync</Text>
           </Pressable>
 
-          <Pressable style={[styles.button, styles.logout]} onPress={logout}>
+          <Pressable style={[styles.button, styles.logoutButton]} onPress={logout}>
             <Text style={styles.buttonText}>Cerrar sesión</Text>
           </Pressable>
         </>
@@ -185,19 +195,35 @@ export default function SeguimientoScreen({
       <View style={styles.card}>
         <Text style={styles.sectionTitle}>Carga de seguimiento</Text>
 
-        <Pressable style={styles.button} onPress={onOpenEvaluacion}>
+        <Pressable
+          style={[styles.button, !hasSelectedTraslado && styles.buttonDisabled]}
+          onPress={onOpenEvaluacion}
+          disabled={!hasSelectedTraslado}
+        >
           <Text style={styles.buttonText}>Valoración inicial</Text>
         </Pressable>
 
-        <Pressable style={styles.button} onPress={onOpenProcedimiento}>
+        <Pressable
+          style={[styles.button, !hasSelectedTraslado && styles.buttonDisabled]}
+          onPress={onOpenProcedimiento}
+          disabled={!hasSelectedTraslado}
+        >
           <Text style={styles.buttonText}>Registrar procedimientos</Text>
         </Pressable>
 
-        <Pressable style={styles.button} onPress={onOpenMedicacion}>
+        <Pressable
+          style={[styles.button, !hasSelectedTraslado && styles.buttonDisabled]}
+          onPress={onOpenMedicacion}
+          disabled={!hasSelectedTraslado}
+        >
           <Text style={styles.buttonText}>Registrar medicamentos</Text>
         </Pressable>
 
-        <Pressable style={styles.button} onPress={onOpenSignos}>
+        <Pressable
+          style={[styles.button, !hasSelectedTraslado && styles.buttonDisabled]}
+          onPress={onOpenSignos}
+          disabled={!hasSelectedTraslado}
+        >
           <Text style={styles.buttonText}>Signos vitales</Text>
         </Pressable>
       </View>
@@ -229,7 +255,8 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   secondary: { backgroundColor: '#1d4ed8', marginBottom: 10 },
-  logout: { backgroundColor: '#b91c1c' },
+  buttonDisabled: { backgroundColor: '#93c5fd', opacity: 0.6 },
+  logoutButton: { backgroundColor: '#b91c1c' },
   buttonText: { color: '#fff', fontWeight: '600' },
   trasladosList: {
     marginBottom: 4,
