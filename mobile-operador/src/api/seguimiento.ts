@@ -12,6 +12,9 @@ export type TrasladoOperario = {
   pacienteNombre?: string | null;
   pacienteApellido?: string | null;
   fechaSolicitud?: string | null;
+  hospitalOrigen?: {
+    nombre?: string | null;
+  } | null;
 };
 
 export async function obtenerTrasladosOperario(operarioId: string) {

@@ -63,8 +63,9 @@ export default function SeguimientoScreen({
     `${(t.pacienteApellido || '').trim()} ${(t.pacienteNombre || '').trim()}`.trim() || 'Paciente sin nombre';
 
   const etiquetaTraslado = (t: TrasladoOperario) => {
+    const hospitalOrigen = t.hospitalOrigen?.nombre?.trim() || 'Hospital origen sin definir';
     const nro = t.numeroTraslado != null ? `Traslado #${t.numeroTraslado}` : `ID ${t.id.slice(0, 8)}`;
-    return `${nombrePaciente(t)} — ${nro} — ${formatearFechaHora(t.fechaSolicitud)}`;
+    return `${nombrePaciente(t)} — ${hospitalOrigen} — ${nro} — Salida: ${formatearFechaHora(t.fechaSolicitud)}`;
   };
 
   useEffect(() => {
@@ -87,19 +88,13 @@ export default function SeguimientoScreen({
         setTraslados(activos);
         setTrasladoId((prev) => {
           const stillExists = activos.some((t) => t.id === prev);
-          if (stillExists) {
-            const selected = activos.find((t) => t.id === prev);
-            if (selected) onTrasladoChange(selected.id, nombrePaciente(selected));
-            return prev;
-          }
-          onTrasladoChange('', '');
+          if (stillExists) return prev;
+          if (activos.length === 1) return activos[0].id;
           return '';
         });
 
         if (activos.length === 1) {
           const unico = activos[0];
-          setTrasladoId(unico.id);
-          onTrasladoChange(unico.id, nombrePaciente(unico));
           Alert.alert('Traslado seleccionado', etiquetaTraslado(unico));
         }
       } catch (_e) {
@@ -115,7 +110,20 @@ export default function SeguimientoScreen({
     return () => {
       mounted = false;
     };
-  }, [usuarioId, onTrasladoChange]);
+  }, [usuarioId]);
+
+  useEffect(() => {
+    if (!trasladoId) {
+      onTrasladoChange('', '');
+      return;
+    }
+    const selected = traslados.find((t) => t.id === trasladoId);
+    if (selected) {
+      onTrasladoChange(selected.id, nombrePaciente(selected));
+    }
+  }, [trasladoId, traslados, onTrasladoChange]);
+
+  const hasSelectedTraslado = Boolean(trasladoId);
 
   const runSync = async () => {
     const result = await syncPendingItems();
@@ -169,7 +177,6 @@ export default function SeguimientoScreen({
                 style={[styles.trasladoItem, selected && styles.trasladoItemSelected]}
                 onPress={() => {
                   setTrasladoId(t.id);
-                  onTrasladoChange(t.id, nombrePaciente(t));
                   Alert.alert('Traslado seleccionado', etiquetaTraslado(t));
                 }}
               >
@@ -185,19 +192,47 @@ export default function SeguimientoScreen({
       <View style={styles.card}>
         <Text style={styles.sectionTitle}>Carga de seguimiento</Text>
 
-        <Pressable style={styles.button} onPress={onOpenEvaluacion}>
+        <Pressable
+          style={[styles.button, !hasSelectedTraslado && styles.buttonDisabled]}
+          disabled={!hasSelectedTraslado}
+          onPress={() => {
+            if (!hasSelectedTraslado) return;
+            onOpenEvaluacion();
+          }}
+        >
           <Text style={styles.buttonText}>Valoración inicial</Text>
         </Pressable>
 
-        <Pressable style={styles.button} onPress={onOpenProcedimiento}>
+        <Pressable
+          style={[styles.button, !hasSelectedTraslado && styles.buttonDisabled]}
+          disabled={!hasSelectedTraslado}
+          onPress={() => {
+            if (!hasSelectedTraslado) return;
+            onOpenProcedimiento();
+          }}
+        >
           <Text style={styles.buttonText}>Registrar procedimientos</Text>
         </Pressable>
 
-        <Pressable style={styles.button} onPress={onOpenMedicacion}>
+        <Pressable
+          style={[styles.button, !hasSelectedTraslado && styles.buttonDisabled]}
+          disabled={!hasSelectedTraslado}
+          onPress={() => {
+            if (!hasSelectedTraslado) return;
+            onOpenMedicacion();
+          }}
+        >
           <Text style={styles.buttonText}>Registrar medicamentos</Text>
         </Pressable>
 
-        <Pressable style={styles.button} onPress={onOpenSignos}>
+        <Pressable
+          style={[styles.button, !hasSelectedTraslado && styles.buttonDisabled]}
+          disabled={!hasSelectedTraslado}
+          onPress={() => {
+            if (!hasSelectedTraslado) return;
+            onOpenSignos();
+          }}
+        >
           <Text style={styles.buttonText}>Signos vitales</Text>
         </Pressable>
       </View>
@@ -229,6 +264,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   secondary: { backgroundColor: '#1d4ed8', marginBottom: 10 },
+  buttonDisabled: { backgroundColor: '#93c5fd' },
   logout: { backgroundColor: '#b91c1c' },
   buttonText: { color: '#fff', fontWeight: '600' },
   trasladosList: {
