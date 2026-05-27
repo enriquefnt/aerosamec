@@ -1,7 +1,10 @@
 export interface Usuario {
   id: string;
   nombre: string;
+  apellido?: string | null;
   email: string;
+  funcion?: string | null;
+  rol?: string | null;
 }
 
 export interface LoginResponse {

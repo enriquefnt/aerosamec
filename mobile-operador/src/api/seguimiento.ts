@@ -19,7 +19,9 @@ export type TrasladoOperario = {
 
 export async function obtenerTrasladosOperario(operarioId: string) {
   const query = encodeURIComponent(operarioId);
-  return apiRequest<{ traslados: TrasladoOperario[] }>(`/api/traslados/operario?operarioId=${query}`);
+  const endpoint = `/api/traslados/operario?operarioId=${query}`;
+  console.log('[mobile] obtenerTrasladosOperario request', { operarioId, endpoint });
+  return apiRequest<{ traslados: TrasladoOperario[] }>(endpoint);
 }
 
 export async function enviarProcedimiento(payload: ProcedimientoPayload) {

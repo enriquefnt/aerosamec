@@ -1,3 +1,7 @@
 - [x] Actualizar `src/api/client.ts` para priorizar `EXPO_PUBLIC_API_URL` y luego `expo.extra.apiBaseUrl`
 - [x] Actualizar `app.json` agregando `expo.extra.apiBaseUrl` con URL de producción
 - [x] Marcar tareas completadas y entregar pasos de rebuild APK
+- [x] Ampliar respuesta de login backend para incluir `apellido`, `funcion`, `rol`
+- [x] Actualizar tipos mobile de usuario para reflejar `funcion` y `rol`
+- [x] Añadir logs temporales de diagnóstico al obtener traslados
+- [x] Entregar pasos de rebuild y validación final en dispositivo
