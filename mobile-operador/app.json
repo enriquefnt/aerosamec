@@ -1,30 +1,17 @@
 {
   "expo": {
-    "name": "mobile-operador",
+    "name": "Aerosamec Operador",
     "slug": "mobile-operador",
     "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "ios": {
-      "supportsTablet": true
-    },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "package": "com.aerosamec.operador",
+      "versionCode": 1
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
+    "extra": {
+      "apiBaseUrl": "https://aerosamec.vercel.app",
+      "eas": {
+        "projectId": "adc1692f-ae90-49a7-92a2-893a58f73e81"
+      }
     }
   }
 }

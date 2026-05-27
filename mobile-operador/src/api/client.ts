@@ -1,10 +1,25 @@
-//const API_BASE_URL = 'http://192.168.1.100:3000';
-//const API_BASE_URL = 'http://192.168.100.196:3000';
-//const API_BASE_URL = 'http://192.168.0.130:3000';
-const API_BASE_URL = 'http://192.168.0.104:3000';
+import Constants from 'expo-constants';
+
+const getApiBaseUrl = (): string => {
+  const fromEnv = process.env.EXPO_PUBLIC_API_URL;
+  const fromExpoExtra =
+    (Constants.expoConfig?.extra as { apiBaseUrl?: string } | undefined)?.apiBaseUrl;
+
+  const fallbackForWeb = 'http://localhost:3000';
+  const fallbackForNative = 'https://aerosamec.vercel.app';
+
+  return (
+    fromEnv ||
+    fromExpoExtra ||
+    (typeof window !== 'undefined' ? fallbackForWeb : fallbackForNative)
+  );
+};
+
+const API_BASE_URL = getApiBaseUrl();
+
 /**
  * Cliente HTTP mínimo para centralizar requests.
- * Cambiar API_BASE_URL por la IP local del servidor.
+ * Define `expo.extra.apiBaseUrl` en app.json para evitar IPs hardcodeadas.
  */
 export async function apiRequest<T>(
   endpoint: string,
