@@ -58,7 +58,19 @@ async function obtenerTrasladosOperario(request: Request) {
 
   const funcionFinal = normalizar(usuario?.funcion || operario.userFuncion);
 
-  const trasladosActivos = await prisma.traslado.findMany({
+  const whereByFuncion = funcionFinal.includes('MEDIC')
+    ? { medicoUsuarioId: operario.userId }
+    : funcionFinal.includes('ENFERMER')
+      ? { enfermeroUsuarioId: operario.userId }
+      : {
+          OR: [
+            { medicoUsuarioId: operario.userId },
+            { enfermeroUsuarioId: operario.userId }
+          ]
+        };
+
+  const traslados = await prisma.traslado.findMany({
+    where: whereByFuncion,
     select: {
       id: true,
       numeroTraslado: true,
@@ -128,22 +140,10 @@ async function obtenerTrasladosOperario(request: Request) {
     }
   });
 
-  const traslados = trasladosActivos.filter((t) => {
-    if (funcionFinal.includes('MEDIC')) {
-      return t.medicoUsuarioId === operario.userId;
-    }
-
-    if (funcionFinal.includes('ENFERMER')) {
-      return t.enfermeroUsuarioId === operario.userId;
-    }
-
-    return t.medicoUsuarioId === operario.userId || t.enfermeroUsuarioId === operario.userId;
-  });
-
   console.log('[operario] filtro traslados', {
     userId: operario.userId,
     funcionFinal,
-    totalActivos: trasladosActivos.length,
+    whereByFuncion,
     totalFiltrados: traslados.length
   });
 
