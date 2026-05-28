@@ -1,7 +1,10 @@
-# TODO - Diagnóstico error 500 móvil (/api/auth/login)
+# TODO - Backend Thorough Closure (Vercel + diagnóstico temporal)
 
-- [x] Verificar carga de variables de entorno (.env vs env.txt)
-- [x] Revisar configuración de arranque del servidor (scripts y runtime)
-- [ ] Probar endpoint /api/auth/login para capturar respuesta real
-- [x] Identificar causa raíz y proponer corrección mínima
-- [ ] Entregar checklist de revisión al usuario
+- [x] Reproducir inconsistencia en producción con curl (`login` y `traslados/operario`)
+- [x] Crear endpoint temporal de diagnóstico de producción
+- [ ] Probar endpoint diagnóstico en Vercel con `operarioId` afectado
+- [ ] Verificar y alinear variables de entorno en Vercel (Production)
+- [ ] Forzar redeploy sin cache
+- [ ] Re-test de endpoints críticos con curl
+- [ ] Retirar endpoint temporal de diagnóstico (cleanup)
+- [ ] Confirmar comportamiento final en mobile

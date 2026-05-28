@@ -78,11 +78,30 @@ export default function SeguimientoScreen({
         const data = await obtenerTrasladosOperario(usuarioId);
         if (!mounted) return;
         const items = Array.isArray(data?.traslados) ? data.traslados : [];
+
+        console.log('[mobile] traslados raw', {
+          usuarioId,
+          total: items.length,
+          ids: items.map((t) => t.id),
+          estados: items.map((t) => (t as unknown as { estado?: string | null }).estado ?? null),
+        });
+
         const activos = items.filter((t) => {
           const estado = String((t as unknown as { estado?: string | null }).estado ?? '')
             .trim()
             .toLowerCase();
-          return estado !== 'completado' && estado !== 'cancelado';
+          return !(
+            estado === 'completado' ||
+            estado === 'completada' ||
+            estado === 'cancelado' ||
+            estado === 'cancelada'
+          );
+        });
+
+        console.log('[mobile] traslados activos', {
+          usuarioId,
+          total: activos.length,
+          ids: activos.map((t) => t.id),
         });
 
         setTraslados(activos);
