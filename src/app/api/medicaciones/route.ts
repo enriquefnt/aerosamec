@@ -1,6 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 
+function parseDatetimeLocalArgentinaToUTC(fechaHora?: string): Date {
+  if (!fechaHora) return new Date();
+
+  // Esperado: YYYY-MM-DDTHH:mm (input datetime-local)
+  const match = fechaHora.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/);
+  if (!match) return new Date(fechaHora);
+
+  const [, y, m, d, hh, mm] = match;
+  // Argentina UTC-3 => sumar 3 horas para persistir UTC equivalente
+  return new Date(Date.UTC(Number(y), Number(m) - 1, Number(d), Number(hh) + 3, Number(mm), 0, 0));
+}
+
 // POST - Registrar nueva medicación
 export async function POST(request: NextRequest) {
   try {
@@ -58,7 +70,7 @@ export async function POST(request: NextRequest) {
         dosis,
         via,
         observaciones,
-        fechaHora: fechaHora ? new Date(fechaHora) : new Date()
+        fechaHora: parseDatetimeLocalArgentinaToUTC(fechaHora)
       },
       include: {
         usuario: {

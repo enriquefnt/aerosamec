@@ -60,33 +60,37 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="sticky top-0 z-20 border-b border-slate-200/80 bg-white/90 backdrop-blur">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <Image 
-                src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/93bc40ea-c225-45d3-b910-974774eb57d3.png" 
-                alt="Logo Sistema de Traslados Médicos" 
-                className="h-10 w-10 rounded-lg"
-                width={500} height={300} />
-             
+          <div className="flex min-h-[72px] flex-col gap-3 py-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <Image
+                src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/93bc40ea-c225-45d3-b910-974774eb57d3.png"
+                alt="Logo Sistema de Traslados Médicos Aéreos"
+                className="h-10 w-10 rounded-xl border border-slate-200 object-cover"
+                width={500}
+                height={300}
+              />
               <div>
-                <h1 className="text-xl font-bold text-gray-900">
+                <h1 className="text-base sm:text-lg font-semibold tracking-tight text-slate-900">
                   Sistema de Traslados Médicos Aéreos
                 </h1>
-                <p className="text-sm text-gray-600">Dashboard - {session.user.name}</p>
+                <p className="text-xs sm:text-sm text-slate-500">
+                  Dashboard · {session.user.name}
+                </p>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
-              <Badge className={getRoleBadgeColor(session.user.rol)}>
+
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Badge className={`${getRoleBadgeColor(session.user.rol)} border font-medium`}>
                 {session.user.rol}
               </Badge>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={handleLogout}
-                className="text-gray-600 hover:text-gray-900"
+                className="border-slate-300 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900"
               >
                 Cerrar Sesión
               </Button>
@@ -96,7 +100,7 @@ export default function DashboardPage() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
             ¡Bienvenido, {session.user.name}!
@@ -276,7 +280,7 @@ export default function DashboardPage() {
                         </svg>
                       </div>
                       <div className="text-left">
-                        <div className="font-medium">Seguimiento Médico</div>
+                        <div className="font-medium">Seguimiento</div>
                         <div className="text-sm text-gray-500">Control durante traslados</div>
                       </div>
                     </div>
@@ -302,7 +306,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Success Message */}
-        <Card className="bg-green-50 border-green-200">
+        <Card className="bg-emerald-50 border-emerald-200 shadow-sm">
           <CardContent className="pt-6">
             <div className="flex items-center space-x-3">
               <div className="flex-shrink-0">
@@ -313,10 +317,10 @@ export default function DashboardPage() {
                 </div>
               </div>
               <div>
-                <h3 className="text-lg font-medium text-green-900">
+                <h3 className="text-lg font-medium text-emerald-900">
                   ¡Autenticación Exitosa!
                 </h3>
-                <p className="text-green-700">
+                <p className="text-emerald-700">
                   El sistema de login está funcionando correctamente. La base de datos está conectada 
                   y los usuarios pueden autenticarse según sus roles.
                 </p>
@@ -325,6 +329,16 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </main>
+
+      {/* Footer */}
+      <footer className="border-t border-slate-200 bg-white/90 backdrop-blur">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between text-xs sm:text-sm text-slate-500">
+            <p>© {new Date().getFullYear()} AeroSAMEC · Sistema de Traslados Médicos Aéreos</p>
+            <p className="text-slate-400"> Operación activa</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

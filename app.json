@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "7ef6026b-92de-43b4-8d67-b816f9dddee3"
+      }
+    },
+    "android": {
+      "package": "com.enrique61.aerosamec"
+    }
+  }
+}

@@ -2,7 +2,7 @@
 
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -14,6 +14,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { formatearFechaHoraLocal } from '@/lib/timezone';
+import { capitalizarNombre, formatearDNIMostrar, formatearInstitucion, formatearTelefono, limpiarTexto } from '@/lib/formatters';
 
 interface Hospital {
   id: string;
@@ -71,7 +72,7 @@ interface Traslado {
   prioridad: string;
   tipoComplejidad: string;
   categoriaPaciente: string;
-  hospitalOrigen: { nombre: string };
+  hospitalOrigen: { nombre: string }; 
   hospitalDestino: { nombre: string };
   usuarioCreador: { nombre: string; apellido: string };
 }
@@ -179,20 +180,32 @@ export default function GestionTrasladosPage() {
     prioridad: 'NORMAL'
   });
 
-  // Redirigir si no es coordinador o admin
+  // Redirigir si no tiene rol autorizado
   useEffect(() => {
     if (status === 'loading') return;
-    if (!session?.user || (session.user.rol !== 'COORDINADOR' && session.user.rol !== 'ADMIN')) {
+    if (
+      !session?.user ||
+      (session.user.rol !== 'COORDINADOR' &&
+        session.user.rol !== 'ADMIN' &&
+        session.user.rol !== 'OPERARIO')
+    ) {
       router.push('/dashboard');
     }
   }, [session, status, router]);
 
-  // Cargar traslados y hospitales
+  // Cargar datos según rol
   useEffect(() => {
-    if (session?.user && (session.user.rol === 'COORDINADOR' || session.user.rol === 'ADMIN')) {
+    if (
+      session?.user &&
+      (session.user.rol === 'COORDINADOR' ||
+        session.user.rol === 'ADMIN' ||
+        session.user.rol === 'OPERARIO')
+    ) {
       cargarTraslados();
-      cargarHospitales();
-      cargarUsuarios();
+      if (session.user.rol !== 'OPERARIO') {
+        cargarHospitales();
+        cargarUsuarios();
+      }
     }
   }, [session]);
 
@@ -268,15 +281,27 @@ export default function GestionTrasladosPage() {
     setSuccess('');
 
     try {
+      const payload = {
+        ...formData,
+        pacienteNombre: capitalizarNombre(formData.pacienteNombre),
+        pacienteApellido: capitalizarNombre(formData.pacienteApellido),
+        pacienteDomicilio: limpiarTexto(formData.pacienteDomicilio),
+        pacienteLocalidad: capitalizarNombre(formData.pacienteLocalidad),
+        institucionSolicitante: formatearInstitucion(formData.institucionSolicitante),
+        profesionalNombre: capitalizarNombre(formData.profesionalNombre),
+        profesionalCelular: formatearTelefono(formData.profesionalCelular),
+        motivoPedido: limpiarTexto(formData.motivoPedido),
+        diagnosticos: limpiarTexto(formData.diagnosticos),
+        numeroObraSocial: formData.numeroObraSocial ? limpiarTexto(formData.numeroObraSocial) : '',
+        usuarioCreadorId: session?.user?.id
+      };
+
       const response = await fetch('/api/traslados', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...formData,
-          usuarioCreadorId: session?.user?.id
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -364,15 +389,27 @@ export default function GestionTrasladosPage() {
     setSuccess('');
 
     try {
+      const payload = {
+        id: editingTraslado.id,
+        ...editFormData,
+        pacienteNombre: capitalizarNombre(editFormData.pacienteNombre),
+        pacienteApellido: capitalizarNombre(editFormData.pacienteApellido),
+        pacienteDomicilio: limpiarTexto(editFormData.pacienteDomicilio),
+        pacienteLocalidad: capitalizarNombre(editFormData.pacienteLocalidad),
+        institucionSolicitante: formatearInstitucion(editFormData.institucionSolicitante),
+        profesionalNombre: capitalizarNombre(editFormData.profesionalNombre),
+        profesionalCelular: formatearTelefono(editFormData.profesionalCelular),
+        motivoPedido: limpiarTexto(editFormData.motivoPedido),
+        diagnosticos: limpiarTexto(editFormData.diagnosticos),
+        numeroObraSocial: editFormData.numeroObraSocial ? limpiarTexto(editFormData.numeroObraSocial) : '',
+      };
+
       const response = await fetch('/api/traslados/editar', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          id: editingTraslado.id,
-          ...editFormData
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -455,15 +492,21 @@ export default function GestionTrasladosPage() {
     setError('');
 
     try {
+      const payload = {
+        id: trasladoEquipo.id,
+        ...equipoData,
+        medicoNombre: equipoData.medicoNombre ? capitalizarNombre(equipoData.medicoNombre) : '',
+        enfermeroNombre: equipoData.enfermeroNombre ? capitalizarNombre(equipoData.enfermeroNombre) : '',
+        pilotoNombre: equipoData.pilotoNombre ? capitalizarNombre(equipoData.pilotoNombre) : '',
+        matriculaAeronave: equipoData.matriculaAeronave ? limpiarTexto(equipoData.matriculaAeronave).toUpperCase() : '',
+      };
+
       const response = await fetch('/api/traslados/equipo', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          id: trasladoEquipo.id,
-          ...equipoData
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -572,7 +615,12 @@ export default function GestionTrasladosPage() {
     );
   }
 
-  if (!session?.user || (session.user.rol !== 'COORDINADOR' && session.user.rol !== 'ADMIN')) {
+  if (
+    !session?.user ||
+    (session.user.rol !== 'COORDINADOR' &&
+      session.user.rol !== 'ADMIN' &&
+      session.user.rol !== 'OPERARIO')
+  ) {
     return null;
   }
 
@@ -678,7 +726,7 @@ export default function GestionTrasladosPage() {
                     <div>
                       <span className="font-medium text-gray-700">Paciente:</span>
                       <p className="text-gray-900">{traslado.pacienteNombre} {traslado.pacienteApellido}</p>
-                      <p className="text-gray-600">DNI: {traslado.pacienteDni}</p>
+                      <p className="text-gray-600">DNI: {formatearDNIMostrar(traslado.pacienteDni)}</p>
                       <p className="text-gray-600">Sexo: {traslado.pacienteSexo}</p>
                     </div>
                     <div>
@@ -756,35 +804,55 @@ export default function GestionTrasladosPage() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => abrirEditarTraslado(traslado)}
-                      className="text-blue-600 hover:text-blue-700"
+                      asChild
+                      className="text-slate-700 hover:text-slate-900"
                     >
-                      Editar
+                      <a
+                        href={`/api/traslados/${traslado.id}/reporte`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Ver reporte individual (imprimible / PDF)"
+                      >
+                        📄 Reporte
+                      </a>
                     </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => abrirCambiarEstado(traslado)}
-                      className="text-purple-600 hover:text-purple-700"
-                    >
-                      Cambiar Estado
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => abrirAsignarEquipo(traslado)}
-                      className="text-green-600 hover:text-green-700"
-                    >
-                      Asignar Equipo
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => abrirEliminarTraslado(traslado)}
-                      className="text-red-600 hover:text-red-700"
-                    >
-                      Eliminar
-                    </Button>
+
+                    {session.user.rol !== 'OPERARIO' && (
+                      <>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => abrirEditarTraslado(traslado)}
+                          className="text-blue-600 hover:text-blue-700"
+                        >
+                          Editar
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => abrirCambiarEstado(traslado)}
+                          className="text-purple-600 hover:text-purple-700"
+                        >
+                          Cambiar Estado
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => abrirAsignarEquipo(traslado)}
+                          className="text-green-600 hover:text-green-700"
+                        >
+                          Asignar Equipo
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => abrirEliminarTraslado(traslado)}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          Eliminar
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -1587,7 +1655,7 @@ export default function GestionTrasladosPage() {
                       {trasladoToDelete.pacienteNombre} {trasladoToDelete.pacienteApellido}
                     </div>
                     <div className="text-red-600">
-                      DNI: {trasladoToDelete.pacienteDni}
+                      DNI: {formatearDNIMostrar(trasladoToDelete.pacienteDni)}
                     </div>
                     <div className="text-red-600">
                       Estado: {trasladoToDelete.estado}
