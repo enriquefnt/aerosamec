@@ -4,8 +4,8 @@ const path = require('path');
 const projectRoot = __dirname;
 const config = getDefaultConfig(projectRoot);
 
-// Prevent Metro from resolving React/React Native from parent workspace.
-config.resolver.disableHierarchicalLookup = true;
+// Keep Expo-recommended resolver behavior.
+config.resolver.disableHierarchicalLookup = false;
 config.resolver.nodeModulesPaths = [path.resolve(projectRoot, 'node_modules')];
 
 module.exports = config;

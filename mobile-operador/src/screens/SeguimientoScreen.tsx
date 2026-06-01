@@ -31,6 +31,7 @@ export default function SeguimientoScreen({
   const [trasladoId, setTrasladoId] = useState(selectedTrasladoId || '');
   const [traslados, setTraslados] = useState<TrasladoOperario[]>([]);
   const [loadingTraslados, setLoadingTraslados] = useState(false);
+  const [lastSelectedFallbackLabel, setLastSelectedFallbackLabel] = useState('');
 
   useEffect(() => {
     const sub = NetInfo.addEventListener((state) => {
@@ -118,7 +119,11 @@ export default function SeguimientoScreen({
         }
       } catch (_e) {
         if (!mounted) return;
-        Alert.alert('Error', 'No se pudieron cargar los traslados asignados');
+        const netState = await NetInfo.fetch();
+        const isOnlineNow = Boolean(netState.isConnected && netState.isInternetReachable !== false);
+        if (isOnlineNow) {
+          Alert.alert('Error', 'No se pudieron cargar los traslados asignados');
+        }
       } finally {
         if (mounted) setLoadingTraslados(false);
       }
@@ -134,13 +139,20 @@ export default function SeguimientoScreen({
   useEffect(() => {
     if (!trasladoId) {
       onTrasladoChange('', '');
+      setLastSelectedFallbackLabel('');
       return;
     }
     const selected = traslados.find((t) => t.id === trasladoId);
     if (selected) {
-      onTrasladoChange(selected.id, nombrePaciente(selected));
+      const label = etiquetaTraslado(selected);
+      onTrasladoChange(selected.id, label);
+      setLastSelectedFallbackLabel(label);
+      return;
     }
-  }, [trasladoId, traslados, onTrasladoChange]);
+    if (lastSelectedFallbackLabel) {
+      onTrasladoChange(trasladoId, lastSelectedFallbackLabel);
+    }
+  }, [trasladoId, traslados, onTrasladoChange, lastSelectedFallbackLabel]);
 
   const hasSelectedTraslado = Boolean(trasladoId);
 
@@ -183,8 +195,16 @@ export default function SeguimientoScreen({
       <View style={styles.card}>
         <Text style={styles.sectionTitle}>Seleccionar traslado</Text>
         {loadingTraslados ? <Text style={styles.subtitle}>Cargando traslados...</Text> : null}
-        {!loadingTraslados && traslados.length === 0 ? (
+        {!loadingTraslados && traslados.length === 0 && !trasladoId ? (
           <Text style={styles.subtitle}>No tienes traslados asignados por el momento.</Text>
+        ) : null}
+
+        {!loadingTraslados && traslados.length === 0 && trasladoId ? (
+          <View style={styles.trasladoItemSelected}>
+            <Text style={styles.trasladoTextSelected}>
+              Último traslado seleccionado (offline): {lastSelectedFallbackLabel}
+            </Text>
+          </View>
         ) : null}
 
         <View style={styles.trasladosList}>
