@@ -1,4 +1,4 @@
-- [x] Ajustar manejo de error en carga de traslados para no mostrar alerta en offline
-- [x] Persistir/usar etiqueta descriptiva completa del último traslado seleccionado (evitar mostrar ID)
-- [x] Actualizar encabezado offline para mostrar datos del traslado en lugar del ID
-- [x] Validación rápida de consistencia en `SeguimientoScreen.tsx`
+- [x] Agregar prop `selectedTrasladoLabel` en `SeguimientoScreen` y pasarla desde `App.tsx`
+- [x] Sincronizar `lastSelectedFallbackLabel` con `selectedTrasladoLabel` para conservar encabezado en offline
+- [x] Aplicar fallback visual robusto en bloque offline cuando no hay traslados cargados
+- [x] Validación estática rápida de consistencia

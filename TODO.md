@@ -1,10 +1,5 @@
-# TODO - Backend Thorough Closure (Vercel + diagnóstico temporal)
-
-- [x] Reproducir inconsistencia en producción con curl (`login` y `traslados/operario`)
-- [x] Crear endpoint temporal de diagnóstico de producción
-- [ ] Probar endpoint diagnóstico en Vercel con `operarioId` afectado
-- [ ] Verificar y alinear variables de entorno en Vercel (Production)
-- [ ] Forzar redeploy sin cache
-- [ ] Re-test de endpoints críticos con curl
-- [ ] Retirar endpoint temporal de diagnóstico (cleanup)
-- [ ] Confirmar comportamiento final en mobile
+- [x] Revisar y ajustar query del reporte para incluir evaluaciones iniciales
+- [x] Implementar formateo de edad para PDF: `AA MM` (>=1 año) y `MM DD` (<1 año)
+- [x] Agregar edad en sección "Paciente" del reporte
+- [x] Insertar tabla de evaluación inicial antes de evolución clínica (con timestamp, diagnóstico, vía aérea, respiración, cardiovascular/hemodinamia y neurológico)
+- [x] Verificación estática rápida de consistencia del archivo modificado

@@ -51,6 +51,7 @@ function Root() {
           onOpenMedicacion={() => setScreen('medicacion')}
           onOpenSignos={() => setScreen('signos')}
           selectedTrasladoId={trasladoId}
+          selectedTrasladoLabel={trasladoLabel}
           onTrasladoChange={(id: string, label: string) => {
             setTrasladoId(id);
             setTrasladoLabel(label);

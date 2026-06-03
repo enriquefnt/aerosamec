@@ -14,6 +14,7 @@ export default function SeguimientoScreen({
   onOpenMedicacion,
   onOpenSignos,
   selectedTrasladoId,
+  selectedTrasladoLabel,
   onTrasladoChange,
   onOnlineChange,
 }: {
@@ -23,6 +24,7 @@ export default function SeguimientoScreen({
   onOpenMedicacion: () => void;
   onOpenSignos: () => void;
   selectedTrasladoId: string;
+  selectedTrasladoLabel: string;
   onTrasladoChange: (trasladoId: string, trasladoLabel: string) => void;
   onOnlineChange: (online: boolean) => void;
 }) {
@@ -31,7 +33,7 @@ export default function SeguimientoScreen({
   const [trasladoId, setTrasladoId] = useState(selectedTrasladoId || '');
   const [traslados, setTraslados] = useState<TrasladoOperario[]>([]);
   const [loadingTraslados, setLoadingTraslados] = useState(false);
-  const [lastSelectedFallbackLabel, setLastSelectedFallbackLabel] = useState('');
+  const [lastSelectedFallbackLabel, setLastSelectedFallbackLabel] = useState(selectedTrasladoLabel || '');
 
   useEffect(() => {
     const sub = NetInfo.addEventListener((state) => {
@@ -45,6 +47,12 @@ export default function SeguimientoScreen({
   useEffect(() => {
     setTrasladoId(selectedTrasladoId || '');
   }, [selectedTrasladoId]);
+
+  useEffect(() => {
+    if (selectedTrasladoLabel?.trim()) {
+      setLastSelectedFallbackLabel(selectedTrasladoLabel);
+    }
+  }, [selectedTrasladoLabel]);
 
   const usuarioId = usuario?.id || '';
 
@@ -202,7 +210,8 @@ export default function SeguimientoScreen({
         {!loadingTraslados && traslados.length === 0 && trasladoId ? (
           <View style={styles.trasladoItemSelected}>
             <Text style={styles.trasladoTextSelected}>
-              Último traslado seleccionado (offline): {lastSelectedFallbackLabel}
+              Último traslado seleccionado (offline):{' '}
+              {lastSelectedFallbackLabel || selectedTrasladoLabel || 'Traslado seleccionado sin detalle disponible'}
             </Text>
           </View>
         ) : null}
