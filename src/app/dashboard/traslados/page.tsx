@@ -16,12 +16,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { formatearFechaHoraLocal } from '@/lib/timezone';
 import { capitalizarNombre, formatearDNIMostrar, formatearInstitucion, formatearTelefono, limpiarTexto } from '@/lib/formatters';
 
-interface Hospital {
-  id: string;
-  nombre: string;
-  ciudad: string;
-}
-
 interface UsuarioLite {
   id: string;
   nombre: string;
@@ -80,7 +74,6 @@ interface Traslado {
 export default function GestionTrasladosPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [hospitales, setHospitales] = useState<Hospital[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -115,8 +108,8 @@ export default function GestionTrasladosPage() {
     codigoTraslado: '',
     
     // Datos del traslado
-    hospitalOrigenId: '',
-    hospitalDestinoId: '',
+    hospitalOrigen: '',
+    hospitalDestino: '',
     tipoComplejidad: '',
     categoriaPaciente: '',
     prioridad: 'NORMAL'
@@ -173,8 +166,8 @@ export default function GestionTrasladosPage() {
     codigoTraslado: '',
     
     // Datos del traslado
-    hospitalOrigenId: '',
-    hospitalDestinoId: '',
+    hospitalOrigen: '',
+    hospitalDestino: '',
     tipoComplejidad: '',
     categoriaPaciente: '',
     prioridad: 'NORMAL'
@@ -203,7 +196,6 @@ export default function GestionTrasladosPage() {
     ) {
       cargarTraslados();
       if (session.user.rol !== 'OPERARIO') {
-        cargarHospitales();
         cargarUsuarios();
       }
     }
@@ -224,19 +216,6 @@ export default function GestionTrasladosPage() {
       setError('Error de conexión');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const cargarHospitales = async () => {
-    try {
-      const response = await fetch('/api/hospitales');
-      const data = await response.json();
-
-      if (response.ok) {
-        setHospitales(data.hospitales || []);
-      }
-    } catch {
-      console.error('Error cargando hospitales');
     }
   };
 
@@ -326,8 +305,8 @@ export default function GestionTrasladosPage() {
           motivoPedido: '',
           diagnosticos: '',
           codigoTraslado: '',
-          hospitalOrigenId: '',
-          hospitalDestinoId: '',
+          hospitalOrigen: '',
+          hospitalDestino: '',
           tipoComplejidad: '',
           categoriaPaciente: '',
           prioridad: 'NORMAL'
@@ -370,8 +349,8 @@ export default function GestionTrasladosPage() {
       codigoTraslado: traslado.codigoTraslado,
       
       // Datos del traslado
-      hospitalOrigenId: '', // Se cargará cuando se abra el diálogo
-      hospitalDestinoId: '', // Se cargará cuando se abra el diálogo
+      hospitalOrigen: traslado.hospitalOrigen?.nombre || '',
+      hospitalDestino: traslado.hospitalDestino?.nombre || '',
       tipoComplejidad: traslado.tipoComplejidad || '',
       categoriaPaciente: traslado.categoriaPaciente || '',
       prioridad: traslado.prioridad
@@ -1063,34 +1042,24 @@ export default function GestionTrasladosPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="hospitalOrigenId">Hospital de Origen *</Label>
-                    <Select value={formData.hospitalOrigenId} onValueChange={(value) => setFormData({...formData, hospitalOrigenId: value})}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar hospital" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {hospitales.map((hospital) => (
-                          <SelectItem key={hospital.id} value={hospital.id}>
-                            {hospital.nombre} - {hospital.ciudad}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Label htmlFor="hospitalOrigen">Hospital de Origen *</Label>
+                    <Input
+                      id="hospitalOrigen"
+                      value={formData.hospitalOrigen}
+                      onChange={(e) => setFormData({...formData, hospitalOrigen: e.target.value})}
+                      placeholder="Ingrese hospital de origen"
+                      required
+                    />
                   </div>
                   <div>
-                    <Label htmlFor="hospitalDestinoId">Hospital de Destino *</Label>
-                    <Select value={formData.hospitalDestinoId} onValueChange={(value) => setFormData({...formData, hospitalDestinoId: value})}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar hospital" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {hospitales.map((hospital) => (
-                          <SelectItem key={hospital.id} value={hospital.id}>
-                            {hospital.nombre} - {hospital.ciudad}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Label htmlFor="hospitalDestino">Hospital de Destino *</Label>
+                    <Input
+                      id="hospitalDestino"
+                      value={formData.hospitalDestino}
+                      onChange={(e) => setFormData({...formData, hospitalDestino: e.target.value})}
+                      placeholder="Ingrese hospital de destino"
+                      required
+                    />
                   </div>
                 </div>
 
@@ -1363,47 +1332,70 @@ export default function GestionTrasladosPage() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <Label htmlFor="edit-codigoTraslado">Código de Traslado *</Label>
-                      <Select value={editFormData.codigoTraslado} onValueChange={(value) => setEditFormData({...editFormData, codigoTraslado: value})}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Seleccionar código" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="ROJO">🔴 ROJO (Urgente)</SelectItem>
-                          <SelectItem value="AMARILLO">🟡 AMARILLO (Programado)</SelectItem>
-                          <SelectItem value="VERDE">🟢 VERDE (No urgente)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label htmlFor="edit-categoriaPaciente">Categoría *</Label>
-                      <Select value={editFormData.categoriaPaciente} onValueChange={(value) => setEditFormData({...editFormData, categoriaPaciente: value})}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Seleccionar" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="NEONATAL">Neonatal</SelectItem>
-                          <SelectItem value="PEDIATRICO">Pediátrico</SelectItem>
-                          <SelectItem value="ADULTO">Adulto</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label htmlFor="edit-tipoComplejidad">Complejidad *</Label>
-                      <Select value={editFormData.tipoComplejidad} onValueChange={(value) => setEditFormData({...editFormData, tipoComplejidad: value})}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Seleccionar" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="BAJA">Baja</SelectItem>
-                          <SelectItem value="MEDIANA">Mediana</SelectItem>
-                          <SelectItem value="ALTA">Alta</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="edit-hospitalOrigen">Hospital de Origen *</Label>
+                    <Input
+                      id="edit-hospitalOrigen"
+                      value={editFormData.hospitalOrigen}
+                      onChange={(e) => setEditFormData({...editFormData, hospitalOrigen: e.target.value})}
+                      placeholder="Ingrese hospital de origen"
+                      required
+                    />
                   </div>
+                  <div>
+                    <Label htmlFor="edit-hospitalDestino">Hospital de Destino *</Label>
+                    <Input
+                      id="edit-hospitalDestino"
+                      value={editFormData.hospitalDestino}
+                      onChange={(e) => setEditFormData({...editFormData, hospitalDestino: e.target.value})}
+                      placeholder="Ingrese hospital de destino"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="edit-codigoTraslado">Código de Traslado *</Label>
+                    <Select value={editFormData.codigoTraslado} onValueChange={(value) => setEditFormData({...editFormData, codigoTraslado: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccionar código" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="ROJO">🔴 ROJO (Urgente)</SelectItem>
+                        <SelectItem value="AMARILLO">🟡 AMARILLO (Programado)</SelectItem>
+                        <SelectItem value="VERDE">🟢 VERDE (No urgente)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-categoriaPaciente">Categoría *</Label>
+                    <Select value={editFormData.categoriaPaciente} onValueChange={(value) => setEditFormData({...editFormData, categoriaPaciente: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccionar" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="NEONATAL">Neonatal</SelectItem>
+                        <SelectItem value="PEDIATRICO">Pediátrico</SelectItem>
+                        <SelectItem value="ADULTO">Adulto</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-tipoComplejidad">Complejidad *</Label>
+                    <Select value={editFormData.tipoComplejidad} onValueChange={(value) => setEditFormData({...editFormData, tipoComplejidad: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccionar" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="BAJA">Baja</SelectItem>
+                        <SelectItem value="MEDIANA">Mediana</SelectItem>
+                        <SelectItem value="ALTA">Alta</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
                 </div>
 
                 {/* Botones */}
