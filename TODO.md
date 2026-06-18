@@ -1,5 +1,4 @@
-- [ ] Actualizar `src/app/dashboard/traslados/page.tsx` para usar campos de texto libre en hospital origen/destino (crear/editar + estado/payload).
-- [ ] Revisar y ajustar API de creación de traslados para aceptar `hospitalOrigen` y `hospitalDestino` como texto libre.
-- [ ] Revisar y ajustar API de edición de traslados para aceptar `hospitalOrigen` y `hospitalDestino` como texto libre.
-- [ ] Verificar tipos/validaciones relacionadas (incluyendo Prisma si aplica mapeo por relación) para persistir correctamente texto libre.
-- [ ] Actualizar TODO con progreso completado.
+- [x] Ejecutar prueba SMTP con `node smtp-test.js`
+- [x] Analizar resultado y error exacto (si falla)
+- [x] Verificar variables críticas para links (`NEXTAUTH_URL`) en entorno
+- [x] Proponer ajustes concretos de configuración/código según resultado

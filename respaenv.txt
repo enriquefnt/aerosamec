@@ -25,4 +25,6 @@ DATABASE_URL="mysql://saltaped_aerosamecDB:enfi7625@109.106.251.56:3306/saltaped
 # NEXTAUTH_SECRET=enfi7625
 # NEXTAUTH_URL=https://sb-75dwk2qap2o5.vercel.rungit 
 NEXTAUTH_URL=http://localhost:3000
-
+NEXTAUTH_URL=http://localhost:3000
+#NEXTAUTH_URL=https://aerosamec.vercel.app
+# JWT_SECRET=enfi7625
