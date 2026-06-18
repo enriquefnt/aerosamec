@@ -37,7 +37,12 @@ export async function POST(req: Request) {
       },
     });
 
-    const resetUrl = `${process.env.NEXTAUTH_URL}/reset-password?token=${token}`;
+    const appUrl =
+      process.env.APP_URL?.replace(/\/$/, "") ||
+      process.env.NEXTAUTH_URL?.replace(/\/$/, "") ||
+      "http://localhost:3000";
+
+    const resetUrl = `${appUrl}/reset-password?token=${token}`;
 
     // ✉️ Enviar email (USANDO EL EMAILER)
     try {

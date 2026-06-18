@@ -2,3 +2,6 @@
 - [x] Analizar resultado y error exacto (si falla)
 - [x] Verificar variables críticas para links (`NEXTAUTH_URL`) en entorno
 - [x] Proponer ajustes concretos de configuración/código según resultado
+- [x] Actualizar construcción de URL de reset usando `APP_URL` con fallback
+- [x] Verificar que el enlace final siga apuntando a `/reset-password?token=...`
+- [x] Marcar tareas como completadas y resumir cambio aplicado
