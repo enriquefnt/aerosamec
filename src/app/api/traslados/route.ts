@@ -104,8 +104,8 @@ export async function POST(request: NextRequest) {
       codigoTraslado,
       
       // Datos del traslado
-      hospitalOrigenId,
-      hospitalDestinoId,
+      hospitalOrigen,
+      hospitalDestino,
       tipoComplejidad,
       categoriaPaciente,
       prioridad,
@@ -137,6 +137,32 @@ export async function POST(request: NextRequest) {
     if (!institucionSolicitante || !profesionalNombre || !motivoPedido) {
       return NextResponse.json(
         { error: 'Los datos de la solicitud son obligatorios' },
+        { status: 400 }
+      );
+    }
+
+    // Resolver hospitales por nombre (texto libre)
+    const hospitalOrigenNombre = limpiarTexto(hospitalOrigen || '');
+    const hospitalDestinoNombre = limpiarTexto(hospitalDestino || '');
+
+    if (!hospitalOrigenNombre || !hospitalDestinoNombre) {
+      return NextResponse.json(
+        { error: 'Hospital de origen y destino son obligatorios' },
+        { status: 400 }
+      );
+    }
+
+    const hospitalOrigenEncontrado = await prisma.hospital.findFirst({
+      where: { nombre: hospitalOrigenNombre }
+    });
+
+    const hospitalDestinoEncontrado = await prisma.hospital.findFirst({
+      where: { nombre: hospitalDestinoNombre }
+    });
+
+    if (!hospitalOrigenEncontrado || !hospitalDestinoEncontrado) {
+      return NextResponse.json(
+        { error: 'Hospital de origen o destino no encontrado en la base de datos' },
         { status: 400 }
       );
     }
@@ -190,8 +216,8 @@ export async function POST(request: NextRequest) {
         codigoTraslado,
         
         // Datos del traslado
-        hospitalOrigenId,
-        hospitalDestinoId,
+        hospitalOrigenId: hospitalOrigenEncontrado.id,
+        hospitalDestinoId: hospitalDestinoEncontrado.id,
         tipoComplejidad,
         categoriaPaciente,
         prioridad: prioridad || 'NORMAL',

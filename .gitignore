@@ -27,3 +27,4 @@ Thumbs.db
 /src/generated
 .vercel
 .env*.local
+.env*

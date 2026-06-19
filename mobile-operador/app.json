@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "name": "Aerosamec Operador",
+    "slug": "mobile-operador",
+    "version": "1.0.0",
+    "android": {
+      "package": "com.aerosamec.operador",
+      "versionCode": 1
+    },
+    "extra": {
+      "apiBaseUrl": "https://aerosamec.vercel.app",
+      "eas": {
+        "projectId": "adc1692f-ae90-49a7-92a2-893a58f73e81"
+      }
+    }
+  }
+}

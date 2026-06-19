@@ -35,6 +35,16 @@ export function formatearDNI(dni: string): string {
     .replace(/[^\d]/g, ''); // Solo números
 }
 
+// Función para mostrar DNI con separador de miles (ej: 14303572 -> 14.303.572)
+export function formatearDNIMostrar(dni: string | number): string {
+  if (dni === null || dni === undefined) return '';
+
+  const soloDigitos = String(dni).replace(/[^\d]/g, '');
+  if (!soloDigitos) return '';
+
+  return Number(soloDigitos).toLocaleString('es-AR');
+}
+
 // Función para formatear teléfono
 export function formatearTelefono(telefono: string): string {
   if (!telefono) return '';

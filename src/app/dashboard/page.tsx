@@ -68,7 +68,7 @@ export default function DashboardPage() {
             <div className="flex items-center gap-3">
               <Image
                 src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/93bc40ea-c225-45d3-b910-974774eb57d3.png"
-                alt="Logo Sistema de Traslados Médicos"
+                alt="Logo Sistema de Traslados Médicos Aéreos"
                 className="h-10 w-10 rounded-xl border border-slate-200 object-cover"
                 width={500}
                 height={300}
@@ -334,7 +334,7 @@ export default function DashboardPage() {
       <footer className="border-t border-slate-200 bg-white/90 backdrop-blur">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between text-xs sm:text-sm text-slate-500">
-            <p>© {new Date().getFullYear()} AeroSAMEC · Sistema de Traslados Médicos</p>
+            <p>© {new Date().getFullYear()} AeroSAMEC · Sistema de Traslados Médicos Aéreos</p>
             <p className="text-slate-400"> Operación activa</p>
           </div>
         </div>

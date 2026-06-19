@@ -1,0 +1,4 @@
+- [x] Agregar prop `selectedTrasladoLabel` en `SeguimientoScreen` y pasarla desde `App.tsx`
+- [x] Sincronizar `lastSelectedFallbackLabel` con `selectedTrasladoLabel` para conservar encabezado en offline
+- [x] Aplicar fallback visual robusto en bloque offline cuando no hay traslados cargados
+- [x] Validación estática rápida de consistencia

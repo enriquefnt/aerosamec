@@ -45,6 +45,8 @@ interface UpdateTrasladoData {
   tipoComplejidad?: string;
   categoriaPaciente?: string;
   prioridad?: string;
+  hospitalOrigenId?: string;
+  hospitalDestinoId?: string;
 }
 
 // PUT - Editar traslado
@@ -75,6 +77,8 @@ export async function PUT(request: NextRequest) {
       codigoTraslado,
       
       // Datos del traslado
+      hospitalOrigen,
+      hospitalDestino,
       tipoComplejidad,
       categoriaPaciente,
       prioridad
@@ -157,6 +161,36 @@ export async function PUT(request: NextRequest) {
     if (tipoComplejidad) updateData.tipoComplejidad = tipoComplejidad;
     if (categoriaPaciente) updateData.categoriaPaciente = categoriaPaciente;
     if (prioridad) updateData.prioridad = prioridad;
+
+    if (hospitalOrigen) {
+      const hospitalOrigenEncontrado = await prisma.hospital.findFirst({
+        where: { nombre: hospitalOrigen }
+      });
+
+      if (!hospitalOrigenEncontrado) {
+        return NextResponse.json(
+          { error: 'Hospital de origen no encontrado en la base de datos' },
+          { status: 400 }
+        );
+      }
+
+      updateData.hospitalOrigenId = hospitalOrigenEncontrado.id;
+    }
+
+    if (hospitalDestino) {
+      const hospitalDestinoEncontrado = await prisma.hospital.findFirst({
+        where: { nombre: hospitalDestino }
+      });
+
+      if (!hospitalDestinoEncontrado) {
+        return NextResponse.json(
+          { error: 'Hospital de destino no encontrado en la base de datos' },
+          { status: 400 }
+        );
+      }
+
+      updateData.hospitalDestinoId = hospitalDestinoEncontrado.id;
+    }
 
     // Actualizar traslado
     const trasladoActualizado = await prisma.traslado.update({

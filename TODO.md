@@ -1,20 +1,5 @@
-# TODO - Seguimiento de traslados
-
-- [x] Revisar modelo Prisma y flujo actual de seguimiento/traslados (DB + API + formulario).
-- [ ] Agregar en DB el campo de texto libre obligatorio `diagnosticosIniciales` en seguimiento.
-- [ ] Agregar en DB los campos de valoración inicial:
-  - [ ] viaAerea
-  - [ ] respiracion
-  - [ ] hemodinamia
-  - [ ] neurologico
-- [ ] Crear endpoint nuevo `POST /api/seguimientos/valoracion-inicial`.
-- [ ] Actualizar endpoint de operario para incluir `seguimientos`.
-- [ ] Actualizar formulario de seguimiento:
-  - [ ] Campo texto libre obligatorio "Diagnósticos"
-  - [ ] Select obligatorio "Vía Aérea"
-  - [ ] Select obligatorio "Respiración"
-  - [ ] Select obligatorio "Hemodinamia"
-  - [ ] Select obligatorio "Neurológico"
-- [ ] Mostrar en grilla una fila "Valoración inicial" con resumen de 5 campos.
-- [ ] Validar obligatoriedad en frontend y backend.
-- [ ] Probar flujo crítico (guardar/consultar valoración inicial).
+- [ ] Actualizar `src/app/dashboard/traslados/page.tsx` para usar campos de texto libre en hospital origen/destino (crear/editar + estado/payload).
+- [ ] Revisar y ajustar API de creación de traslados para aceptar `hospitalOrigen` y `hospitalDestino` como texto libre.
+- [ ] Revisar y ajustar API de edición de traslados para aceptar `hospitalOrigen` y `hospitalDestino` como texto libre.
+- [ ] Verificar tipos/validaciones relacionadas (incluyendo Prisma si aplica mapeo por relación) para persistir correctamente texto libre.
+- [ ] Actualizar TODO con progreso completado.

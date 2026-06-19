@@ -14,12 +14,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { formatearFechaHoraLocal } from '@/lib/timezone';
-
-interface Hospital {
-  id: string;
-  nombre: string;
-  ciudad: string;
-}
+import { capitalizarNombre, formatearDNIMostrar, formatearInstitucion, formatearTelefono, limpiarTexto } from '@/lib/formatters';
 
 interface UsuarioLite {
   id: string;
@@ -71,7 +66,7 @@ interface Traslado {
   prioridad: string;
   tipoComplejidad: string;
   categoriaPaciente: string;
-  hospitalOrigen: { nombre: string };
+  hospitalOrigen: { nombre: string }; 
   hospitalDestino: { nombre: string };
   usuarioCreador: { nombre: string; apellido: string };
 }
@@ -79,7 +74,6 @@ interface Traslado {
 export default function GestionTrasladosPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [hospitales, setHospitales] = useState<Hospital[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -114,8 +108,8 @@ export default function GestionTrasladosPage() {
     codigoTraslado: '',
     
     // Datos del traslado
-    hospitalOrigenId: '',
-    hospitalDestinoId: '',
+    hospitalOrigen: '',
+    hospitalDestino: '',
     tipoComplejidad: '',
     categoriaPaciente: '',
     prioridad: 'NORMAL'
@@ -172,8 +166,8 @@ export default function GestionTrasladosPage() {
     codigoTraslado: '',
     
     // Datos del traslado
-    hospitalOrigenId: '',
-    hospitalDestinoId: '',
+    hospitalOrigen: '',
+    hospitalDestino: '',
     tipoComplejidad: '',
     categoriaPaciente: '',
     prioridad: 'NORMAL'
@@ -202,7 +196,6 @@ export default function GestionTrasladosPage() {
     ) {
       cargarTraslados();
       if (session.user.rol !== 'OPERARIO') {
-        cargarHospitales();
         cargarUsuarios();
       }
     }
@@ -223,19 +216,6 @@ export default function GestionTrasladosPage() {
       setError('Error de conexión');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const cargarHospitales = async () => {
-    try {
-      const response = await fetch('/api/hospitales');
-      const data = await response.json();
-
-      if (response.ok) {
-        setHospitales(data.hospitales || []);
-      }
-    } catch {
-      console.error('Error cargando hospitales');
     }
   };
 
@@ -280,15 +260,27 @@ export default function GestionTrasladosPage() {
     setSuccess('');
 
     try {
+      const payload = {
+        ...formData,
+        pacienteNombre: capitalizarNombre(formData.pacienteNombre),
+        pacienteApellido: capitalizarNombre(formData.pacienteApellido),
+        pacienteDomicilio: limpiarTexto(formData.pacienteDomicilio),
+        pacienteLocalidad: capitalizarNombre(formData.pacienteLocalidad),
+        institucionSolicitante: formatearInstitucion(formData.institucionSolicitante),
+        profesionalNombre: capitalizarNombre(formData.profesionalNombre),
+        profesionalCelular: formatearTelefono(formData.profesionalCelular),
+        motivoPedido: limpiarTexto(formData.motivoPedido),
+        diagnosticos: limpiarTexto(formData.diagnosticos),
+        numeroObraSocial: formData.numeroObraSocial ? limpiarTexto(formData.numeroObraSocial) : '',
+        usuarioCreadorId: session?.user?.id
+      };
+
       const response = await fetch('/api/traslados', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...formData,
-          usuarioCreadorId: session?.user?.id
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -313,8 +305,8 @@ export default function GestionTrasladosPage() {
           motivoPedido: '',
           diagnosticos: '',
           codigoTraslado: '',
-          hospitalOrigenId: '',
-          hospitalDestinoId: '',
+          hospitalOrigen: '',
+          hospitalDestino: '',
           tipoComplejidad: '',
           categoriaPaciente: '',
           prioridad: 'NORMAL'
@@ -357,8 +349,8 @@ export default function GestionTrasladosPage() {
       codigoTraslado: traslado.codigoTraslado,
       
       // Datos del traslado
-      hospitalOrigenId: '', // Se cargará cuando se abra el diálogo
-      hospitalDestinoId: '', // Se cargará cuando se abra el diálogo
+      hospitalOrigen: traslado.hospitalOrigen?.nombre || '',
+      hospitalDestino: traslado.hospitalDestino?.nombre || '',
       tipoComplejidad: traslado.tipoComplejidad || '',
       categoriaPaciente: traslado.categoriaPaciente || '',
       prioridad: traslado.prioridad
@@ -376,15 +368,27 @@ export default function GestionTrasladosPage() {
     setSuccess('');
 
     try {
+      const payload = {
+        id: editingTraslado.id,
+        ...editFormData,
+        pacienteNombre: capitalizarNombre(editFormData.pacienteNombre),
+        pacienteApellido: capitalizarNombre(editFormData.pacienteApellido),
+        pacienteDomicilio: limpiarTexto(editFormData.pacienteDomicilio),
+        pacienteLocalidad: capitalizarNombre(editFormData.pacienteLocalidad),
+        institucionSolicitante: formatearInstitucion(editFormData.institucionSolicitante),
+        profesionalNombre: capitalizarNombre(editFormData.profesionalNombre),
+        profesionalCelular: formatearTelefono(editFormData.profesionalCelular),
+        motivoPedido: limpiarTexto(editFormData.motivoPedido),
+        diagnosticos: limpiarTexto(editFormData.diagnosticos),
+        numeroObraSocial: editFormData.numeroObraSocial ? limpiarTexto(editFormData.numeroObraSocial) : '',
+      };
+
       const response = await fetch('/api/traslados/editar', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          id: editingTraslado.id,
-          ...editFormData
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -467,15 +471,21 @@ export default function GestionTrasladosPage() {
     setError('');
 
     try {
+      const payload = {
+        id: trasladoEquipo.id,
+        ...equipoData,
+        medicoNombre: equipoData.medicoNombre ? capitalizarNombre(equipoData.medicoNombre) : '',
+        enfermeroNombre: equipoData.enfermeroNombre ? capitalizarNombre(equipoData.enfermeroNombre) : '',
+        pilotoNombre: equipoData.pilotoNombre ? capitalizarNombre(equipoData.pilotoNombre) : '',
+        matriculaAeronave: equipoData.matriculaAeronave ? limpiarTexto(equipoData.matriculaAeronave).toUpperCase() : '',
+      };
+
       const response = await fetch('/api/traslados/equipo', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          id: trasladoEquipo.id,
-          ...equipoData
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -695,7 +705,7 @@ export default function GestionTrasladosPage() {
                     <div>
                       <span className="font-medium text-gray-700">Paciente:</span>
                       <p className="text-gray-900">{traslado.pacienteNombre} {traslado.pacienteApellido}</p>
-                      <p className="text-gray-600">DNI: {traslado.pacienteDni}</p>
+                      <p className="text-gray-600">DNI: {formatearDNIMostrar(traslado.pacienteDni)}</p>
                       <p className="text-gray-600">Sexo: {traslado.pacienteSexo}</p>
                     </div>
                     <div>
@@ -1032,34 +1042,24 @@ export default function GestionTrasladosPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="hospitalOrigenId">Hospital de Origen *</Label>
-                    <Select value={formData.hospitalOrigenId} onValueChange={(value) => setFormData({...formData, hospitalOrigenId: value})}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar hospital" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {hospitales.map((hospital) => (
-                          <SelectItem key={hospital.id} value={hospital.id}>
-                            {hospital.nombre} - {hospital.ciudad}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Label htmlFor="hospitalOrigen">Hospital de Origen *</Label>
+                    <Input
+                      id="hospitalOrigen"
+                      value={formData.hospitalOrigen}
+                      onChange={(e) => setFormData({...formData, hospitalOrigen: e.target.value})}
+                      placeholder="Ingrese hospital de origen"
+                      required
+                    />
                   </div>
                   <div>
-                    <Label htmlFor="hospitalDestinoId">Hospital de Destino *</Label>
-                    <Select value={formData.hospitalDestinoId} onValueChange={(value) => setFormData({...formData, hospitalDestinoId: value})}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Seleccionar hospital" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {hospitales.map((hospital) => (
-                          <SelectItem key={hospital.id} value={hospital.id}>
-                            {hospital.nombre} - {hospital.ciudad}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Label htmlFor="hospitalDestino">Hospital de Destino *</Label>
+                    <Input
+                      id="hospitalDestino"
+                      value={formData.hospitalDestino}
+                      onChange={(e) => setFormData({...formData, hospitalDestino: e.target.value})}
+                      placeholder="Ingrese hospital de destino"
+                      required
+                    />
                   </div>
                 </div>
 
@@ -1332,47 +1332,70 @@ export default function GestionTrasladosPage() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <Label htmlFor="edit-codigoTraslado">Código de Traslado *</Label>
-                      <Select value={editFormData.codigoTraslado} onValueChange={(value) => setEditFormData({...editFormData, codigoTraslado: value})}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Seleccionar código" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="ROJO">🔴 ROJO (Urgente)</SelectItem>
-                          <SelectItem value="AMARILLO">🟡 AMARILLO (Programado)</SelectItem>
-                          <SelectItem value="VERDE">🟢 VERDE (No urgente)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label htmlFor="edit-categoriaPaciente">Categoría *</Label>
-                      <Select value={editFormData.categoriaPaciente} onValueChange={(value) => setEditFormData({...editFormData, categoriaPaciente: value})}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Seleccionar" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="NEONATAL">Neonatal</SelectItem>
-                          <SelectItem value="PEDIATRICO">Pediátrico</SelectItem>
-                          <SelectItem value="ADULTO">Adulto</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label htmlFor="edit-tipoComplejidad">Complejidad *</Label>
-                      <Select value={editFormData.tipoComplejidad} onValueChange={(value) => setEditFormData({...editFormData, tipoComplejidad: value})}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Seleccionar" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="BAJA">Baja</SelectItem>
-                          <SelectItem value="MEDIANA">Mediana</SelectItem>
-                          <SelectItem value="ALTA">Alta</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="edit-hospitalOrigen">Hospital de Origen *</Label>
+                    <Input
+                      id="edit-hospitalOrigen"
+                      value={editFormData.hospitalOrigen}
+                      onChange={(e) => setEditFormData({...editFormData, hospitalOrigen: e.target.value})}
+                      placeholder="Ingrese hospital de origen"
+                      required
+                    />
                   </div>
+                  <div>
+                    <Label htmlFor="edit-hospitalDestino">Hospital de Destino *</Label>
+                    <Input
+                      id="edit-hospitalDestino"
+                      value={editFormData.hospitalDestino}
+                      onChange={(e) => setEditFormData({...editFormData, hospitalDestino: e.target.value})}
+                      placeholder="Ingrese hospital de destino"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="edit-codigoTraslado">Código de Traslado *</Label>
+                    <Select value={editFormData.codigoTraslado} onValueChange={(value) => setEditFormData({...editFormData, codigoTraslado: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccionar código" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="ROJO">🔴 ROJO (Urgente)</SelectItem>
+                        <SelectItem value="AMARILLO">🟡 AMARILLO (Programado)</SelectItem>
+                        <SelectItem value="VERDE">🟢 VERDE (No urgente)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-categoriaPaciente">Categoría *</Label>
+                    <Select value={editFormData.categoriaPaciente} onValueChange={(value) => setEditFormData({...editFormData, categoriaPaciente: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccionar" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="NEONATAL">Neonatal</SelectItem>
+                        <SelectItem value="PEDIATRICO">Pediátrico</SelectItem>
+                        <SelectItem value="ADULTO">Adulto</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-tipoComplejidad">Complejidad *</Label>
+                    <Select value={editFormData.tipoComplejidad} onValueChange={(value) => setEditFormData({...editFormData, tipoComplejidad: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccionar" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="BAJA">Baja</SelectItem>
+                        <SelectItem value="MEDIANA">Mediana</SelectItem>
+                        <SelectItem value="ALTA">Alta</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
                 </div>
 
                 {/* Botones */}
@@ -1624,7 +1647,7 @@ export default function GestionTrasladosPage() {
                       {trasladoToDelete.pacienteNombre} {trasladoToDelete.pacienteApellido}
                     </div>
                     <div className="text-red-600">
-                      DNI: {trasladoToDelete.pacienteDni}
+                      DNI: {formatearDNIMostrar(trasladoToDelete.pacienteDni)}
                     </div>
                     <div className="text-red-600">
                       Estado: {trasladoToDelete.estado}

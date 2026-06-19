@@ -22,6 +22,18 @@ function valor(value: unknown): string {
   return escapeHtml(text);
 }
 
+function formatearEdadReporte(anios?: number | null, meses?: number | null, dias?: number | null): string {
+  const a = anios ?? 0;
+  const m = meses ?? 0;
+  const d = dias ?? 0;
+
+  if (a > 0) {
+    return `${a}A ${m}M`;
+  }
+
+  return `${m}M ${d}D`;
+}
+
 export async function GET(_request: NextRequest, { params }: Params) {
   try {
     const token = await getToken({
@@ -65,6 +77,9 @@ export async function GET(_request: NextRequest, { params }: Params) {
             }
           },
           orderBy: { fechaHora: 'desc' }
+        },
+        evaluacionesIniciales: {
+          orderBy: { fechaHora: 'asc' }
         }
       }
     });
@@ -132,6 +147,19 @@ export async function GET(_request: NextRequest, { params }: Params) {
 
     eventosClinicos.sort((a, b) => a.fecha.getTime() - b.fecha.getTime());
 
+    const filasEvaluacionInicial = (traslado.evaluacionesIniciales || [])
+      .map((ev) => {
+        return `<tr>
+          <td>${valor(formatearFechaHoraLocal(ev.fechaHora))}</td>
+          <td>${valor(ev.diagnostico)}</td>
+          <td>${valor(ev.viaAerea)}</td>
+          <td>${valor(ev.respiracion)}</td>
+          <td>${valor(ev.hemodinamia)}</td>
+          <td>${valor(ev.neurologico)}</td>
+        </tr>`;
+      })
+      .join('');
+
     const filasEvolucion = eventosClinicos
       .map((e) => {
         return `<tr>
@@ -193,6 +221,7 @@ export async function GET(_request: NextRequest, { params }: Params) {
       <div class="item"><span class="label">DNI</span>${valor(traslado.pacienteDni)}</div>
       <div class="item"><span class="label">Fecha Nacimiento</span>${valor(formatearFechaHoraLocal(traslado.pacienteFechaNac))}</div>
       <div class="item"><span class="label">Sexo</span>${valor(traslado.pacienteSexo)}</div>
+      <div class="item"><span class="label">Edad</span>${valor(formatearEdadReporte(traslado.pacienteEdadAnios, traslado.pacienteEdadMeses, traslado.pacienteEdadDias))}</div>
       <div class="item"><span class="label">Domicilio</span>${valor(traslado.pacienteDomicilio)}</div>
       <div class="item"><span class="label">Localidad</span>${valor(traslado.pacienteLocalidad)}</div>
     </div>
@@ -221,6 +250,25 @@ export async function GET(_request: NextRequest, { params }: Params) {
       <div class="item"><span class="label">Matrícula Aeronave</span>${valor(traslado.matriculaAeronave)}</div>
       <div class="item"><span class="label">Horario salida</span>${valor(traslado.horarioSalida ? formatearFechaHoraLocal(traslado.horarioSalida) : '—')}</div>
       <div class="item"><span class="label">Usuario creador</span>${valor(`${traslado.usuarioCreador?.nombre || ''} ${traslado.usuarioCreador?.apellido || ''}`)}</div>
+    </div>
+
+    <h2>Evaluación inicial</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 16%;">Fecha/Hora</th>
+            <th style="width: 18%;">Diagnóstico</th>
+            <th style="width: 16%;">Vía aérea</th>
+            <th style="width: 16%;">Respiración</th>
+            <th style="width: 17%;">Cardiovascular</th>
+            <th style="width: 17%;">Neurológico</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${filasEvaluacionInicial || '<tr><td colspan="6">Sin evaluación inicial registrada</td></tr>'}
+        </tbody>
+      </table>
     </div>
 
     <h2>Evolución clínica (medicación / procedimientos / signos vitales)</h2>
