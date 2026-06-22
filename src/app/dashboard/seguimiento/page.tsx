@@ -67,6 +67,7 @@ export default function SeguimientoMedicoPage() {
   const [showSignosDialog, setShowSignosDialog] = useState(false);
   const [showEstadoDialog, setShowEstadoDialog] = useState(false);
   const [showEvaluacionInicialDialog, setShowEvaluacionInicialDialog] = useState(false);
+  const [showValoracionDialog, setShowValoracionDialog] = useState(false);
 
   // Estados de carga
   const [savingProcedimiento, setSavingProcedimiento] = useState(false);
@@ -75,6 +76,7 @@ export default function SeguimientoMedicoPage() {
   const [updatingEstado, setUpdatingEstado] = useState(false);
   const [savingEpicrisis, setSavingEpicrisis] = useState(false);
   const [savingEvaluacionInicial, setSavingEvaluacionInicial] = useState(false);
+  const [savingValoracion, setSavingValoracion] = useState(false);
 
   // Form states
   const [procedimientoForm, setProcedimientoForm] = useState({
@@ -112,6 +114,15 @@ export default function SeguimientoMedicoPage() {
     respiracion: '',
     hemodinamia: '',
     neurologico: ''
+  });
+
+  const [valoracionForm, setValoracionForm] = useState({
+    diagnosticosIniciales: '',
+    viaAerea: '',
+    respiracion: '',
+    hemodinamia: '',
+    neurologico: '',
+    fechaHora: ''
   });
 
   // Función para obtener fecha/hora actual del dispositivo
@@ -857,13 +868,13 @@ const registrarProcedimiento = async (e: React.FormEvent) => {
                                   {registro.tipoRegistro === 'valoracion' && (
                                     <div>
                                       <div className="font-medium">
-                                        {('diagnosticosIniciales' in registro && registro.diagnosticosIniciales) ? registro.diagnosticosIniciales : '-'}
+                                        {'diagnosticosIniciales' in registro ? String(registro.diagnosticosIniciales ?? '-') : '-'}
                                       </div>
                                       <div className="text-sm text-gray-600">
-                                        VA: {('viaAerea' in registro && registro.viaAerea) ? registro.viaAerea : '-'} | 
-                                        Resp: {('respiracion' in registro && registro.respiracion) ? registro.respiracion : '-'} | 
-                                        Hemo: {('hemodinamia' in registro && registro.hemodinamia) ? registro.hemodinamia : '-'} | 
-                                        Neuro: {('neurologico' in registro && registro.neurologico) ? registro.neurologico : '-'}
+                                        VA: {'viaAerea' in registro ? String(registro.viaAerea ?? '-') : '-'} | 
+                                        Resp: {'respiracion' in registro ? String(registro.respiracion ?? '-') : '-'} | 
+                                        Hemo: {'hemodinamia' in registro ? String(registro.hemodinamia ?? '-') : '-'} | 
+                                        Neuro: {'neurologico' in registro ? String(registro.neurologico ?? '-') : '-'}
                                       </div>
                                     </div>
                                   )}

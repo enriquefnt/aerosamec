@@ -37,7 +37,37 @@ export async function POST(req: Request) {
       },
     });
 
-    const resetUrl = `${process.env.NEXTAUTH_URL}/reset-password?token=${token}`;
+    const appUrlCandidates = {
+      APP_URL: process.env.APP_URL?.trim(),
+      NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL?.trim(),
+      NEXTAUTH_URL: process.env.NEXTAUTH_URL?.trim(),
+      VERCEL_PROJECT_PRODUCTION_URL: process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim(),
+      VERCEL_URL: process.env.VERCEL_URL?.trim(),
+    };
+
+    const resolvedRawBaseUrl =
+      appUrlCandidates.APP_URL ||
+      appUrlCandidates.NEXT_PUBLIC_APP_URL ||
+      appUrlCandidates.NEXTAUTH_URL ||
+      appUrlCandidates.VERCEL_PROJECT_PRODUCTION_URL ||
+      appUrlCandidates.VERCEL_URL ||
+      "http://localhost:3000";
+
+    const normalizedBaseUrl = /^https?:\/\//i.test(resolvedRawBaseUrl)
+      ? resolvedRawBaseUrl
+      : `https://${resolvedRawBaseUrl}`;
+
+    const appUrl = normalizedBaseUrl.replace(/\/$/, "");
+    const resetUrl = `${appUrl}/reset-password?token=${token}`;
+
+    console.info("[forgot-password] URL resolution", {
+      selectedBaseUrl: appUrl,
+      has_APP_URL: !!appUrlCandidates.APP_URL,
+      has_NEXT_PUBLIC_APP_URL: !!appUrlCandidates.NEXT_PUBLIC_APP_URL,
+      has_NEXTAUTH_URL: !!appUrlCandidates.NEXTAUTH_URL,
+      has_VERCEL_PROJECT_PRODUCTION_URL: !!appUrlCandidates.VERCEL_PROJECT_PRODUCTION_URL,
+      has_VERCEL_URL: !!appUrlCandidates.VERCEL_URL,
+    });
 
     // ✉️ Enviar email (USANDO EL EMAILER)
     try {
@@ -57,7 +87,12 @@ export async function POST(req: Request) {
         `,
       });
     } catch (mailError) {
-      console.error("Forgot password mail error:", mailError);
+      console.error("Forgot password mail error:", {
+        message: (mailError as { message?: string })?.message,
+        code: (mailError as { code?: string })?.code,
+        responseCode: (mailError as { responseCode?: number })?.responseCode,
+        command: (mailError as { command?: string })?.command,
+      });
       // Respuesta genérica para no filtrar detalles ni romper UX por SMTP
       return NextResponse.json({ ok: true });
     }

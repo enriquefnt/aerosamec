@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -11,7 +15,7 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
     // "ignoreDeprecations": "6.0",
     "baseUrl": ".",
@@ -21,7 +25,9 @@
       }
     ],
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": [
+        "src/*"
+      ]
     }
   },
   "include": [
@@ -33,7 +39,12 @@
     "server.js",
     "smtp-test.js",
     "types/**/*.d.ts",
-    "prisma/**/*.ts"
+    "prisma/**/*.ts",
+    ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "mobile-operador", "mobile-operador/**/*"]
+  "exclude": [
+    "node_modules",
+    "mobile-operador",
+    "mobile-operador/**/*"
+  ]
 }
