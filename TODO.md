@@ -5,8 +5,13 @@
 - [x] Actualizar construcción de URL de reset usando `APP_URL` con fallback
 - [x] Verificar que el enlace final siga apuntando a `/reset-password?token=...`
 - [x] Marcar tareas como completadas y resumir cambio aplicado
-- [ ] Agregar `engines.node` en `package.json` a `20.x`
-- [ ] Alinear `eslint-config-next` con versión de Next (`16.2.9`)
-- [ ] Ejecutar `npm install` para actualizar lockfile
-- [ ] Ejecutar `npm run build` para validar
-- [ ] Resumir cambios y pasos en Vercel
+- [x] Agregar `engines.node` en `package.json` a `20.x`
+- [x] Alinear `eslint-config-next` con versión de Next (`16.2.9`)
+- [x] Ejecutar `npm install` para actualizar lockfile
+- [x] Ejecutar `npm run build` para validar
+- [x] Resumir cambios y pasos en Vercel
+- [ ] Instrumentar logs de diagnóstico en forgot-password (URL base + SMTP)
+- [ ] Ejecutar curl de prueba local al endpoint forgot-password
+- [ ] Revisar output de terminal y aislar causa de URL incorrecta
+- [ ] Definir corrección mínima para URL base
+- [ ] Definir chequeos para SMTP en Vercel y documentarlos
