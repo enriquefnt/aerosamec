@@ -49,7 +49,7 @@ interface Traslado {
   controlesSignos: Array<{ id: string; fechaHora: string; frecuenciaCardiaca?: string; frecuenciaRespiratoria?: string; presionArterialSist?: string; presionArterialDiast?: string; temperatura?: string; saturacionO2?: string; escalaGlasgow?: string; observaciones?: string }>;
   evaluacionesIniciales: Array<{ id: string; fechaHora: string; diagnostico: string; viaAerea: string; respiracion: string; hemodinamia: string; neurologico: string }>;
   epicrisis?: string;
-  seguimientos: SeguimientoRegistro[];
+  seguimientos?: SeguimientoRegistro[];
 }
 
 export default function SeguimientoMedicoPage() {
@@ -813,7 +813,7 @@ const registrarProcedimiento = async (e: React.FormEvent) => {
                                 tipoRegistro: 'signos',
                                 timestamp: new Date(c.fechaHora).getTime()
                               })),
-                              ...trasladoSeleccionado.seguimientos
+                              ...(trasladoSeleccionado.seguimientos ?? [])
                                 .filter((s) => s.tipo === 'VALORACION_INICIAL')
                                 .map((s) => ({
                                   ...s,

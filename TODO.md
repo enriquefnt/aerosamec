@@ -10,8 +10,6 @@
 - [x] Ejecutar `npm install` para actualizar lockfile
 - [x] Ejecutar `npm run build` para validar
 - [x] Resumir cambios y pasos en Vercel
-- [ ] Instrumentar logs de diagnóstico en forgot-password (URL base + SMTP)
-- [ ] Ejecutar curl de prueba local al endpoint forgot-password
-- [ ] Revisar output de terminal y aislar causa de URL incorrecta
-- [ ] Definir corrección mínima para URL base
-- [ ] Definir chequeos para SMTP en Vercel y documentarlos
+- [ ] Aplicar fix defensivo para `seguimientos` undefined en dashboard seguimiento
+- [ ] Ejecutar `npm run build` para validar fix runtime/TS
+- [ ] Confirmar testing pendiente y resumir cierre
