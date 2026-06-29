@@ -736,6 +736,14 @@ export default function GestionTrasladosPage() {
                         <p className="text-gray-900">{traslado.profesionalNombre}</p>
                         <p className="text-gray-600">{traslado.profesionalCelular}</p>
                       </div>
+                      <div>
+                        <span className="font-medium text-gray-700">Hospital de Origen:</span>
+                        <p className="text-gray-900">{traslado.hospitalOrigen?.nombre || '-'}</p>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-700">Hospital de Destino:</span>
+                        <p className="text-gray-900">{traslado.hospitalDestino?.nombre || '-'}</p>
+                      </div>
                     </div>
                     <div className="mt-3">
                       <span className="font-medium text-gray-700">Motivo:</span>
