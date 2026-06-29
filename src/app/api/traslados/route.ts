@@ -152,20 +152,35 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const hospitalOrigenEncontrado = await prisma.hospital.findFirst({
-      where: { nombre: hospitalOrigenNombre }
-    });
+    const hospitalOrigenEncontrado =
+      (await prisma.hospital.findFirst({
+        where: { nombre: hospitalOrigenNombre }
+      })) ??
+      (await prisma.hospital.create({
+        data: {
+          nombre: hospitalOrigenNombre,
+          direccion: 'No especificado',
+          ciudad: 'No especificado',
+          provincia: 'No especificado',
+          tipo: 'OTRO',
+          activo: true
+        }
+      }));
 
-    const hospitalDestinoEncontrado = await prisma.hospital.findFirst({
-      where: { nombre: hospitalDestinoNombre }
-    });
-
-    if (!hospitalOrigenEncontrado || !hospitalDestinoEncontrado) {
-      return NextResponse.json(
-        { error: 'Hospital de origen o destino no encontrado en la base de datos' },
-        { status: 400 }
-      );
-    }
+    const hospitalDestinoEncontrado =
+      (await prisma.hospital.findFirst({
+        where: { nombre: hospitalDestinoNombre }
+      })) ??
+      (await prisma.hospital.create({
+        data: {
+          nombre: hospitalDestinoNombre,
+          direccion: 'No especificado',
+          ciudad: 'No especificado',
+          provincia: 'No especificado',
+          tipo: 'OTRO',
+          activo: true
+        }
+      }));
 
     // Calcular edad automáticamente
     const fechaNac = new Date(pacienteFechaNac);

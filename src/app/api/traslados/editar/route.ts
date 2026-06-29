@@ -163,31 +163,39 @@ export async function PUT(request: NextRequest) {
     if (prioridad) updateData.prioridad = prioridad;
 
     if (hospitalOrigen) {
-      const hospitalOrigenEncontrado = await prisma.hospital.findFirst({
-        where: { nombre: hospitalOrigen }
-      });
-
-      if (!hospitalOrigenEncontrado) {
-        return NextResponse.json(
-          { error: 'Hospital de origen no encontrado en la base de datos' },
-          { status: 400 }
-        );
-      }
+      const hospitalOrigenEncontrado =
+        (await prisma.hospital.findFirst({
+          where: { nombre: hospitalOrigen }
+        })) ??
+        (await prisma.hospital.create({
+          data: {
+            nombre: hospitalOrigen,
+            direccion: 'No especificado',
+            ciudad: 'No especificado',
+            provincia: 'No especificado',
+            tipo: 'OTRO',
+            activo: true
+          }
+        }));
 
       updateData.hospitalOrigenId = hospitalOrigenEncontrado.id;
     }
 
     if (hospitalDestino) {
-      const hospitalDestinoEncontrado = await prisma.hospital.findFirst({
-        where: { nombre: hospitalDestino }
-      });
-
-      if (!hospitalDestinoEncontrado) {
-        return NextResponse.json(
-          { error: 'Hospital de destino no encontrado en la base de datos' },
-          { status: 400 }
-        );
-      }
+      const hospitalDestinoEncontrado =
+        (await prisma.hospital.findFirst({
+          where: { nombre: hospitalDestino }
+        })) ??
+        (await prisma.hospital.create({
+          data: {
+            nombre: hospitalDestino,
+            direccion: 'No especificado',
+            ciudad: 'No especificado',
+            provincia: 'No especificado',
+            tipo: 'OTRO',
+            activo: true
+          }
+        }));
 
       updateData.hospitalDestinoId = hospitalDestinoEncontrado.id;
     }

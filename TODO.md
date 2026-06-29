@@ -1,17 +1,6 @@
-- [x] Ejecutar prueba SMTP con `node smtp-test.js`
-- [x] Analizar resultado y error exacto (si falla)
-- [x] Verificar variables críticas para links (`NEXTAUTH_URL`) en entorno
-- [x] Proponer ajustes concretos de configuración/código según resultado
-- [x] Actualizar construcción de URL de reset usando `APP_URL` con fallback
-- [x] Verificar que el enlace final siga apuntando a `/reset-password?token=...`
-- [x] Marcar tareas como completadas y resumir cambio aplicado
-- [x] Agregar `engines.node` en `package.json` a `20.x`
-- [x] Alinear `eslint-config-next` con versión de Next (`16.2.9`)
-- [x] Ejecutar `npm install` para actualizar lockfile
-- [x] Ejecutar `npm run build` para validar
-- [x] Resumir cambios y pasos en Vercel
-- [ ] Instrumentar logs de diagnóstico en forgot-password (URL base + SMTP)
-- [ ] Ejecutar curl de prueba local al endpoint forgot-password
-- [ ] Revisar output de terminal y aislar causa de URL incorrecta
-- [ ] Definir corrección mínima para URL base
-- [ ] Definir chequeos para SMTP en Vercel y documentarlos
+# TODO
+
+- [x] Revisar endpoints de traslados (`src/app/api/traslados/**`) para identificar validación actual de `hospitalOrigen` y `hospitalDestino`.
+- [x] Ajustar backend para permitir hospitales existentes y también texto libre.
+- [x] Mantener compatibilidad con alta/edición de traslados actuales.
+- [ ] Probar flujo crear/editar traslado y validar comportamiento.
