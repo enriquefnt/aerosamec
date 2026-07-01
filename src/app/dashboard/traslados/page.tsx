@@ -125,8 +125,6 @@ export default function GestionTrasladosPage() {
   const [trasladoEquipo, setTrasladoEquipo] = useState<Traslado | null>(null);
   const [updatingEquipo, setUpdatingEquipo] = useState(false);
   const [usuarios, setUsuarios] = useState<UsuarioLite[]>([]);
-  const [medicoSearch, setMedicoSearch] = useState('');
-  const [enfermeroSearch, setEnfermeroSearch] = useState('');
   const [equipoData, setEquipoData] = useState({
     horarioSalida: '',
     medicoNombre: '',
@@ -235,23 +233,13 @@ export default function GestionTrasladosPage() {
     }
   };
 
-  const medicosDisponibles = usuarios.filter((u: UsuarioLite) => {
-    const esMedico = normalizarFuncion(u.funcion).includes('MEDIC');
-    if (!esMedico) return false;
-    const q = medicoSearch.trim().toLowerCase();
-    if (!q) return true;
-    const nombreCompleto = `${u.nombre} ${u.apellido}`.toLowerCase();
-    return nombreCompleto.includes(q);
-  });
+  const medicosDisponibles = usuarios.filter((u: UsuarioLite) =>
+    normalizarFuncion(u.funcion).includes('MEDIC')
+  );
 
-  const enfermerosDisponibles = usuarios.filter((u: UsuarioLite) => {
-    const esEnfermero = normalizarFuncion(u.funcion).includes('ENFERMER');
-    if (!esEnfermero) return false;
-    const q = enfermeroSearch.trim().toLowerCase();
-    if (!q) return true;
-    const nombreCompleto = `${u.nombre} ${u.apellido}`.toLowerCase();
-    return nombreCompleto.includes(q);
-  });
+  const enfermerosDisponibles = usuarios.filter((u: UsuarioLite) =>
+    normalizarFuncion(u.funcion).includes('ENFERMER')
+  );
 
   const crearTraslado = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1523,14 +1511,7 @@ export default function GestionTrasladosPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="medicoSearch">Médico a Cargo</Label>
-                    <Input
-                      id="medicoSearch"
-                      value={medicoSearch}
-                      onChange={(e) => setMedicoSearch(e.target.value)}
-                      placeholder="Buscar médico..."
-                      className="mb-2"
-                    />
+                    <Label htmlFor="medicoNombre">Médico a Cargo</Label>
                     <Select
                       value={equipoData.medicoUsuarioId}
                       onValueChange={(value) => {
@@ -1558,14 +1539,7 @@ export default function GestionTrasladosPage() {
                     </Select>
                   </div>
                   <div>
-                    <Label htmlFor="enfermeroSearch">Enfermero</Label>
-                    <Input
-                      id="enfermeroSearch"
-                      value={enfermeroSearch}
-                      onChange={(e) => setEnfermeroSearch(e.target.value)}
-                      placeholder="Buscar enfermero..."
-                      className="mb-2"
-                    />
+                    <Label htmlFor="enfermeroNombre">Enfermero</Label>
                     <Select
                       value={equipoData.enfermeroUsuarioId}
                       onValueChange={(value) => {
