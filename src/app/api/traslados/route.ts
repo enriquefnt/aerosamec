@@ -22,11 +22,40 @@ function calcularEdad(fechaNacimiento: Date, fechaReferencia: Date = new Date())
   }
 }
 
-// Función para generar número de traslado
-function generarNumeroTraslado(): string {
-  const year = new Date().getFullYear();
-  const random = Math.floor(Math.random() * 9000) + 1000;
-  return `TRA-${year}-${random}`;
+// Función para generar número de traslado (YYMMDD-#)
+async function generarNumeroTraslado(): Promise<string> {
+  const ahora = new Date();
+  const yy = String(ahora.getFullYear()).slice(-2);
+  const mm = String(ahora.getMonth() + 1).padStart(2, '0');
+  const dd = String(ahora.getDate()).padStart(2, '0');
+  const prefijo = `${yy}${mm}${dd}`;
+
+  const ultimoTrasladoDelDia = await prisma.traslado.findFirst({
+    where: {
+      numeroTraslado: {
+        startsWith: `${prefijo}-`
+      }
+    },
+    orderBy: {
+      createdAt: 'desc'
+    },
+    select: {
+      numeroTraslado: true
+    }
+  });
+
+  let siguienteCorrelativo = 1;
+
+  if (ultimoTrasladoDelDia?.numeroTraslado) {
+    const partes = ultimoTrasladoDelDia.numeroTraslado.split('-');
+    const correlativoActual = Number(partes[1]);
+
+    if (!Number.isNaN(correlativoActual) && correlativoActual > 0) {
+      siguienteCorrelativo = correlativoActual + 1;
+    }
+  }
+
+  return `${prefijo}-${siguienteCorrelativo}`;
 }
 
 // GET - Listar traslados
@@ -186,20 +215,8 @@ export async function POST(request: NextRequest) {
     const fechaNac = new Date(pacienteFechaNac);
     const edad = calcularEdad(fechaNac);
 
-    // Generar número de traslado único
-    let numeroTraslado = generarNumeroTraslado();
-    let numeroExiste = true;
-    
-    while (numeroExiste) {
-      const existente = await prisma.traslado.findUnique({
-        where: { numeroTraslado }
-      });
-      if (existente) {
-        numeroTraslado = generarNumeroTraslado();
-      } else {
-        numeroExiste = false;
-      }
-    }
+    // Generar número de traslado con formato YYMMDD-#
+    const numeroTraslado = await generarNumeroTraslado();
 
     // Crear traslado
     const nuevoTraslado = await prisma.traslado.create({

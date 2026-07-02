@@ -4,3 +4,9 @@
   - [x] Simplificar listas `medicosDisponibles` y `enfermerosDisponibles` sin búsqueda
 - [x] Revisar consistencia del archivo tras cambios
 - [x] Marcar tareas completadas
+
+- [x] Cambiar generación de `numeroTraslado` a formato `YYMMDD-#` en `src/app/api/traslados/route.ts`
+  - [x] Crear función async para obtener correlativo diario
+  - [x] Reemplazar lógica aleatoria actual y bucle de unicidad
+  - [x] Mantener fallback defensivo si el sufijo no es parseable
+- [x] Revisar consistencia del endpoint POST de traslados
